@@ -1,6 +1,5 @@
 #include "functional.h"
 #include <structmember.h>
-// #include "retraceutils.h"
 
 struct Intercept : public PyObject {
     

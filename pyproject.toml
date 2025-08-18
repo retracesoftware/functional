@@ -1,5 +1,5 @@
 [project]
-name = "retracesoftware.functional"
+name = "retracesoftware_functional"
 version = "0.1.0"
 description = "C-Extension type for python that provides functional programming utilities"
 readme = "README.md"

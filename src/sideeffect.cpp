@@ -1,5 +1,6 @@
 #include "functional.h"
 #include <structmember.h>
+#include <functional>
 
 struct SideEffect {
     PyObject_HEAD

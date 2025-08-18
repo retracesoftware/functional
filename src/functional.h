@@ -3,8 +3,6 @@
 #include <signal.h>
 
 #include <Python.h>
-#include <functional>
-#include <vector>
 
 #define SMALL_ARGS 5
 
@@ -14,7 +12,7 @@
     ((Py_ssize_t) &reinterpret_cast<const volatile char&>((((type*)0)->member)))
 
 extern PyTypeObject CallAll_Type;
-extern PyTypeObject TransformCall_Type;
+extern PyTypeObject Observer_Type;
 extern PyTypeObject Compose_Type;
 extern PyTypeObject SideEffect_Type;
 extern PyTypeObject Repeatedly_Type;
@@ -30,7 +28,7 @@ extern PyTypeObject CasePredicate_Type;
 extern PyTypeObject Memoize_Type;
 
 extern PyTypeObject ManyPredicate_Type;
-// extern PyTypeObject Walker_Type;
+extern PyTypeObject Walker_Type;
 extern PyTypeObject Cache_Type;
 extern PyTypeObject ThreadLocalProxy_Type;
 extern PyTypeObject TypePredWalker_Type;
@@ -40,12 +38,16 @@ extern PyTypeObject Intercept_Type;
 extern PyTypeObject Indexer_Type;
 extern PyTypeObject Param_Type;
 extern PyTypeObject TernaryPredicate_Type;
+extern PyTypeObject IfThenElse_Type;
+extern PyTypeObject AnyArgs_Type;
+// extern PyTypeObject When_Type;
+// extern PyTypeObject WhenNot_Type;
 
 extern PyObject * ThreadLocalError;
 
 PyObject * join(const char * sep, PyObject * elements);
 
-PyObject * find_first(std::function<PyObject * (PyObject *)> f, PyObject * obj);
+// PyObject * find_first(std::function<PyObject * (PyObject *)> f, PyObject * obj);
 
 PyObject * partial(PyObject * function, PyObject * const * args, size_t nargs);
 
@@ -62,6 +64,19 @@ inline int check_callable(PyObject *obj, void *out) {
     }
     *((PyObject **)out) = obj;
     return 1;
+}
+
+static inline vectorcallfunc extract_vectorcall(PyObject *callable)
+{
+    PyTypeObject *tp = Py_TYPE(callable);
+    if (!PyType_HasFeature(tp, Py_TPFLAGS_HAVE_VECTORCALL)) {
+        return PyObject_Vectorcall;
+    }
+    Py_ssize_t offset = tp->tp_vectorcall_offset;
+
+    vectorcallfunc ptr;
+    memcpy(&ptr, (char *) callable + offset, sizeof(ptr));
+    return ptr;
 }
 
 #define CHECK_CALLABLE(name) \

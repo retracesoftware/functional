@@ -2,6 +2,7 @@
 #include "object.h"
 #include <structmember.h>
 #include <signal.h>
+#include <functional>
 
 struct Compose {
     PyObject_HEAD
