@@ -1,7 +1,35 @@
 [project]
 name = "retracesoftware.functional"
 version = "0.1.0"
+description = "C-Extension type for python that provides functional programming utilities"
+readme = "README.md"
 license = {text = "Apache-2.0"}
+authors = [
+    {name = "Retrace Software", email = "info@retracesoftware.com"}
+]
+maintainers = [
+    {name = "Retrace Software", email = "info@retracesoftware.com"}
+]
+keywords = ["functional", "programming", "c-extension", "utilities"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/retracesoftware/functional"
+Repository = "https://github.com/retracesoftware/functional"
+Documentation = "https://github.com/retracesoftware/functional"
+"Bug Tracker" = "https://github.com/retracesoftware/functional/issues"
 
 [build-system]
 requires = ["meson-python>=0.15.0"]
