@@ -1,5 +1,5 @@
 [project]
-name = "retracesoftware.functional"
+name = "retracesoftware_functional"
 version = "0.1.0"
 license = {text = "Apache-2.0"}
 

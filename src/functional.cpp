@@ -13,6 +13,14 @@ static PyObject * apply_impl(PyObject *self, PyObject *const *args, Py_ssize_t n
     return result;
 }
 
+static PyObject * first_arg_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargsf, PyObject *kwnames) {
+    if (PyVectorcall_NARGS(nargsf) == 0) {
+        PyErr_SetString(PyExc_TypeError, "first_arg() requires at least one positional argument");
+        return nullptr;
+    }
+    return Py_NewRef(args[0]);
+}
+
 static PyObject * partial_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
 
     if (nargs < 2) {
@@ -28,6 +36,7 @@ static PyObject * identity(PyObject *self, PyObject *obj) { return Py_NewRef(obj
 static PyMethodDef module_methods[] = {
     {"identity", (PyCFunction)identity, METH_O, "TODO"},
     {"apply", (PyCFunction)apply_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
+    {"first_arg", (PyCFunction)first_arg_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
     {"partial", (PyCFunction)partial_impl, METH_FASTCALL, "TODO"},
     {NULL, NULL, 0, NULL}  // Sentinel
 };
@@ -44,7 +53,7 @@ static PyModuleDef moduledef = {
 PyObject *ThreadLocalError = NULL;
 
 // Module initialization
-PyMODINIT_FUNC PyInit_functional(void) {
+PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
     PyObject* module;
 
     // Create the module
@@ -58,7 +67,7 @@ PyMODINIT_FUNC PyInit_functional(void) {
 
     PyTypeObject * types[] = {
         &CallAll_Type,
-        &TransformCall_Type,
+        &Observer_Type,
         &Compose_Type,
         &SideEffect_Type,
         &Repeatedly_Type,
@@ -81,7 +90,11 @@ PyMODINIT_FUNC PyInit_functional(void) {
         &Indexer_Type,
         &Param_Type,
         &TernaryPredicate_Type,
-        // &Walker_Type,
+        &IfThenElse_Type,
+        &AnyArgs_Type,
+        &Walker_Type,
+        // &When_Type,
+        // &WhenNot_Type,
         NULL
     };
 

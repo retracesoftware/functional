@@ -1,14 +1,16 @@
 # meson.build
-project('retracesoftware.functional', 'cpp', default_options: ['cpp_std=c++20'])
+project('retracesoftware_functional', 'cpp', default_options: ['cpp_std=c++20'])
+#project('retracesoftware_functional', 'c', default_options: ['c_std=c99'])
+#project('retracesoftware_functional', ['c', 'cpp'], default_options: ['c_std=c99', 'cpp_std=c++20'])
 
 # Bind to the interpreter Meson/meson-python wants us to use.
 py = import('python').find_installation()
 fs = import('fs')
 
 py.extension_module(
-  'functional',
+  'retracesoftware_functional',
   ['src/functional.cpp',
-   'src/transformcall.cpp',
+   'src/observer.cpp',
    'src/callall.cpp',
    'src/sideeffect.cpp',
    'src/compose.cpp',
@@ -19,7 +21,6 @@ py.extension_module(
    'src/whenpredicate.cpp',
     'src/casepredicate.cpp',
     'src/typepredicate.cpp',
-    'src/transformargs.cpp',
     'src/first.cpp',
     'src/advice.cpp',
     'src/memoize.cpp',
@@ -32,9 +33,13 @@ py.extension_module(
     'src/intercept.cpp',
     'src/indexer.cpp',
     'src/param.cpp',
-    'src/ternarypredicate.cpp'],
+    'src/ternarypredicate.cpp',
+    'src/ifthenelse.cpp',
+    'src/anyargs.cpp',
+    'src/transformargs.cpp',
+    'src/walker.cpp',
+    'src/when.cpp'],
   install: true,
-  subdir: 'retracesoftware',
 
   # If you want extra flags:
   # cpp_args: ['-O3', '-fvisibility=hidden'],
