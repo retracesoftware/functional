@@ -40,6 +40,7 @@ extern PyTypeObject Param_Type;
 extern PyTypeObject TernaryPredicate_Type;
 extern PyTypeObject IfThenElse_Type;
 extern PyTypeObject AnyArgs_Type;
+extern PyTypeObject FirstOf_Type;
 // extern PyTypeObject When_Type;
 // extern PyTypeObject WhenNot_Type;
 
@@ -50,6 +51,8 @@ PyObject * join(const char * sep, PyObject * elements);
 // PyObject * find_first(std::function<PyObject * (PyObject *)> f, PyObject * obj);
 
 PyObject * partial(PyObject * function, PyObject * const * args, size_t nargs);
+PyObject * dispatch(PyObject * const * args, size_t nargs);
+PyObject * firstof(PyObject * const * args, size_t nargs);
 
 struct ManyPredicate : public PyObject {
     PyObject * elements;

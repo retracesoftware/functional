@@ -38,7 +38,8 @@ py.extension_module(
     'src/anyargs.cpp',
     'src/transformargs.cpp',
     'src/walker.cpp',
-    'src/when.cpp'],
+    'src/when.cpp',
+    'src/firstof.cpp'],
   install: true,
 
   # If you want extra flags:

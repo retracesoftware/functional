@@ -30,6 +30,14 @@ static PyObject * partial_impl(PyObject *self, PyObject *const *args, Py_ssize_t
     return partial(args[0], args + 1, nargs - 1);
 }
 
+static PyObject * dispatch_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
+    return dispatch(args + 1, nargs - 1);
+}
+
+static PyObject * firstof_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
+    return firstof(args + 1, nargs - 1);
+}
+
 static PyObject * identity(PyObject *self, PyObject *obj) { return Py_NewRef(obj); }
 
 // Module-level methods
@@ -38,6 +46,8 @@ static PyMethodDef module_methods[] = {
     {"apply", (PyCFunction)apply_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
     {"first_arg", (PyCFunction)first_arg_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
     {"partial", (PyCFunction)partial_impl, METH_FASTCALL, "TODO"},
+    {"dispatch", (PyCFunction)dispatch_impl, METH_FASTCALL, "TODO"},
+    {"firstof", (PyCFunction)firstof_impl, METH_FASTCALL, "TODO"},
     {NULL, NULL, 0, NULL}  // Sentinel
 };
 
@@ -64,6 +74,15 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
 
     ThreadLocalError = PyErr_NewException(MODULE "ThreadLocalError", PyExc_RuntimeError, NULL);
     if (!ThreadLocalError) return nullptr;
+
+    PyTypeObject * hidden_types[] = {
+        &FirstOf_Type,
+        nullptr
+    };
+
+    for (int i = 0; hidden_types[i]; i++) {
+        PyType_Ready(hidden_types[i]);
+    }
 
     PyTypeObject * types[] = {
         &CallAll_Type,
@@ -94,10 +113,11 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &AnyArgs_Type,
         &Walker_Type,
         // &When_Type,
+
         // &WhenNot_Type,
         NULL
     };
-
+        
     for (int i = 0; types[i]; i++) {
         PyType_Ready(types[i]);
 

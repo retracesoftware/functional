@@ -15,7 +15,7 @@ struct IfThenElse {
 };
 
 static PyObject * vectorcall(IfThenElse * self, PyObject** args, size_t nargsf, PyObject* kwnames) {
-
+    
     PyObject * test_res = self->test_vectorcall(self->test, args + self->from_arg, PyVectorcall_NARGS(nargsf) - self->from_arg, kwnames);
 
     if (!test_res) return nullptr;
@@ -101,6 +101,10 @@ static PyMemberDef members[] = {
     {NULL}  /* Sentinel */
 };
 
+static PyObject* descr_get(PyObject *self, PyObject *obj, PyObject *type) {
+    return obj == NULL || obj == Py_None ? Py_NewRef(self) : PyMethod_New(self, obj);
+}
+
 PyTypeObject IfThenElse_Type = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = MODULE "if_then_else",
@@ -115,6 +119,7 @@ PyTypeObject IfThenElse_Type = {
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,
     .tp_members = members,
+    .tp_descr_get = descr_get,
     .tp_init = (initproc)init,
     .tp_new = PyType_GenericNew,
 };

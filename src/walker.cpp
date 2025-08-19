@@ -128,6 +128,8 @@ static PyObject * walk_dict(Walker * self, PyObject * dict) {
 
 static PyObject * walk(Walker * self, PyObject * arg) {
 
+    if (arg == Py_None) return Py_NewRef(Py_None);
+
     PyTypeObject * cls = Py_TYPE(arg);
 
     if (cls == &PyTuple_Type) {
