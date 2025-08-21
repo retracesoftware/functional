@@ -1,7 +1,7 @@
 [project]
 name = "retracesoftware_functional"
 version = "0.1.0"
-description = "C-Extension type for python that provides functional programming utilities"
+description = "High-performance functional utilities implemented as a Python C/C++ extension"
 readme = "README.md"
 license = {text = "Apache-2.0"}
 authors = [
@@ -10,7 +10,7 @@ authors = [
 maintainers = [
     {name = "Retrace Software", email = "info@retracesoftware.com"}
 ]
-keywords = ["functional", "programming", "c-extension", "utilities"]
+keywords = ["functional", "programming", "c-extension", "utilities", "performance"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -20,7 +20,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 requires-python = ">=3.11"
 dependencies = []
