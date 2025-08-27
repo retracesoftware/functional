@@ -7,23 +7,55 @@ using namespace ankerl::unordered_dense;
 struct Memoize {
     PyObject_HEAD
     PyObject * target;
+    PyObject * callback;
+    map<PyObject *, PyObject *> weakref_to_key;
     map<PyObject *, PyObject *> m_cache;
 
-    Memoize(PyObject * target) : target(Py_NewRef(target)), m_cache() {}
+    Memoize(PyObject * target) : target(Py_NewRef(target)), weakref_to_key(), m_cache() {}
     ~Memoize() {}
 
     vectorcallfunc vectorcall;
 };
 
+static void delete_key(Memoize * self, PyObject * key) {
+    auto it = self->m_cache.find(key);
+    if (it != self->m_cache.end()) {
+        self->m_cache.erase(key);
+        Py_DECREF(it->second);
+    }
+}
+
+static PyObject * weakref_callback(Memoize * self, PyObject * weakref) {
+
+    auto it = self->weakref_to_key.find(weakref);
+
+    if (it != self->weakref_to_key.end()) {
+        self->weakref_to_key.erase(it);
+        delete_key(self, it->second);
+        Py_DECREF(it->first);
+    }
+    Py_RETURN_NONE;
+}
+
 static PyObject * memo_one_arg(Memoize * self, PyObject * arg) {
     auto it = self->m_cache.find(arg);
+
     if (it == self->m_cache.end()) {
-        
+
         PyObject * res = PyObject_CallOneArg(self->target, arg);
 
         if (!res) return nullptr;
+    
+        PyObject * weakref = PyWeakref_NewRef(arg, self->callback);
 
-        self->m_cache[Py_NewRef(arg)] = res;
+        if (weakref) {
+            self->weakref_to_key[weakref] = arg;
+        }
+        else {
+            PyErr_Clear();
+            Py_INCREF(arg);
+        }
+        self->m_cache[arg] = res;
 
         return Py_NewRef(res);
     } else {
@@ -46,11 +78,13 @@ static PyObject * vectorcall_one_arg(Memoize * self, PyObject** args, size_t nar
 
 static int traverse(Memoize* self, visitproc visit, void* arg) {
     Py_VISIT(self->target);
+    Py_VISIT(self->callback);
     return 0;
 }
 
 static int clear(Memoize* self) {
     Py_CLEAR(self->target);
+    Py_CLEAR(self->callback);
 
     for (auto it : self->m_cache) {
         Py_DECREF(it.first);
@@ -91,6 +125,10 @@ static PyObject * create(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     }
 
     new (self) Memoize(target);
+
+    static PyMethodDef def = { "weakref_callback", (PyCFunction)weakref_callback, METH_O, "TODO" };
+
+    self->callback = PyCFunction_New(&def, (PyObject *)self);
 
     self->vectorcall = (vectorcallfunc)vectorcall_one_arg;
 

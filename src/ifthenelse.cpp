@@ -23,10 +23,14 @@ static PyObject * vectorcall(IfThenElse * self, PyObject** args, size_t nargsf, 
     Py_DECREF(test_res);
 
     switch (is_true) {
-        case 0:
-            return self->then_vectorcall(self->then, args, nargsf, kwnames);
         case 1:
-            return self->otherwise_vectorcall(self->otherwise, args, nargsf, kwnames);
+            return self->then 
+                ? self->then_vectorcall(self->then, args, nargsf, kwnames)
+                : Py_NewRef(Py_None);
+        case 0:
+            return self->otherwise 
+                ? self->otherwise_vectorcall(self->otherwise, args, nargsf, kwnames) 
+                : Py_NewRef(Py_None);
         default:
             return nullptr;
     }
@@ -83,10 +87,15 @@ static int init(IfThenElse *self, PyObject *args, PyObject *kwds) {
     
     self->test = Py_XNewRef(test);
     self->test_vectorcall = extract_vectorcall(test);
-    self->then = Py_XNewRef(then);
-    self->then_vectorcall = extract_vectorcall(then);
-    self->otherwise = Py_XNewRef(otherwise);
-    self->otherwise_vectorcall = extract_vectorcall(otherwise);
+
+    if (then) {
+        self->then = Py_XNewRef(then);
+        self->then_vectorcall = extract_vectorcall(then);
+    }
+    if (otherwise) {
+        self->otherwise = Py_XNewRef(otherwise);
+        self->otherwise_vectorcall = extract_vectorcall(otherwise);
+    }
     self->vectorcall = (vectorcallfunc)vectorcall;
     self->from_arg = from_arg;
 

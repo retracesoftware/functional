@@ -16,8 +16,9 @@ struct FirstOf : public PyVarObject {
 
 static PyObject * vectorcall(FirstOf * self, PyObject** args, size_t nargsf, PyObject* kwnames) {
 
-    for (size_t i = 0; i < (size_t)self->ob_size; i++) {
-        Pair * pair = self->dispatch + i;
+    Pair * pair = self->dispatch;
+
+    for (size_t i = 0; i < (size_t)self->ob_size - 1; i++) {
 
         PyObject * res = pair->vectorcall(pair->callable, args, nargsf, kwnames);
         if (!res) return nullptr;
@@ -26,8 +27,9 @@ static PyObject * vectorcall(FirstOf * self, PyObject** args, size_t nargsf, PyO
         } else {
             return res;
         }
+        pair++;
     }
-    Py_RETURN_NONE;
+    return pair->vectorcall(pair->callable, args, nargsf, kwnames);
 }
 
 static int traverse(FirstOf* self, visitproc visit, void* arg) {
@@ -73,16 +75,17 @@ PyTypeObject FirstOf_Type = {
 
 PyObject * firstof(PyObject * const * args, size_t nargs) {
 
-    FirstOf * self = (FirstOf *)FirstOf_Type.tp_alloc(&FirstOf_Type, (nargs >> 1));
+    FirstOf * self = (FirstOf *)FirstOf_Type.tp_alloc(&FirstOf_Type, nargs);
     
     if (!self) {
         return NULL;
     }
 
-    for (int i = 0; i < nargs; i++) {
+    for (size_t i = 0; i < nargs; i++) {
         self->dispatch[i].vectorcall = extract_vectorcall(args[i]);
         self->dispatch[i].callable = Py_NewRef(args[i]);
     }
+
     self->vectorcall = (vectorcallfunc)vectorcall;
 
     return (PyObject *)self;

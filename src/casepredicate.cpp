@@ -98,7 +98,7 @@ PyObject * dispatch(PyObject * const * args, size_t nargs) {
         return NULL;
     }
 
-    for (int pair = 0; pair < (nargs >> 1); pair++) {
+    for (size_t pair = 0; pair < (nargs >> 1); pair++) {
         self->dispatch[pair].test.vectorcall = extract_vectorcall(args[pair * 2]);
         self->dispatch[pair].test.callable = Py_NewRef(args[pair * 2]);
         self->dispatch[pair].then.vectorcall = extract_vectorcall(args[(pair * 2) + 1]);

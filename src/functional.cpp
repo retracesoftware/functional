@@ -21,14 +21,14 @@ static PyObject * first_arg_impl(PyObject *self, PyObject *const *args, Py_ssize
     return Py_NewRef(args[0]);
 }
 
-static PyObject * partial_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
+// static PyObject * partial_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
 
-    if (nargs < 2) {
-        PyErr_SetString(PyExc_TypeError, "partial() requires at least two arguments");
-        return NULL;
-    }
-    return partial(args[0], args + 1, nargs - 1);
-}
+//     if (nargs < 2) {
+//         PyErr_SetString(PyExc_TypeError, "partial() requires at least two arguments");
+//         return NULL;
+//     }
+//     return partial(args[0], args + 1, nargs - 1);
+// }
 
 static PyObject * dispatch_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
     return dispatch(args + 1, nargs - 1);
@@ -38,14 +38,55 @@ static PyObject * firstof_impl(PyObject *self, PyObject *const *args, Py_ssize_t
     return firstof(args + 1, nargs - 1);
 }
 
+static PyObject * py_typeof(PyObject *self, PyObject *obj) { return Py_NewRef((PyObject *)Py_TYPE(obj)); }
+
 static PyObject * identity(PyObject *self, PyObject *obj) { return Py_NewRef(obj); }
+
+static PyObject * py_instanceof(PyObject *self, PyObject * args, PyObject *kwds) { 
+    PyTypeObject * cls = nullptr;
+    PyTypeObject * andnot = nullptr;
+
+    static const char *kwlist[] = {"cls", "andnot", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|O!", (char **)kwlist, 
+        &PyType_Type, &cls, &PyType_Type, &andnot))
+    {
+        return nullptr; // Return NULL on failure
+    }
+    
+    if (andnot) {
+        return instanceof_andnot(cls, andnot);
+    } else {
+        return instanceof(cls);
+    }
+}
+
+static PyObject * py_instance_test(PyObject *self, PyObject *obj) { 
+    if (!PyType_Check(obj)) {
+        PyErr_Format(PyExc_TypeError, "instance_test must be passed a type, was passed: %S", obj);
+        return nullptr;
+    }
+    return instance_test(reinterpret_cast<PyTypeObject *>(obj));
+}
+
+static PyObject * py_notinstance_test(PyObject *self, PyObject *obj) { 
+    if (!PyType_Check(obj)) {
+        PyErr_Format(PyExc_TypeError, "notinstance_test must be passed a type, was passed: %S", obj);
+        return nullptr;
+    }
+    return notinstance_test(reinterpret_cast<PyTypeObject *>(obj));
+}
 
 // Module-level methods
 static PyMethodDef module_methods[] = {
+    {"isinstanceof", (PyCFunction)py_instanceof, METH_VARARGS | METH_KEYWORDS, "TODO"},
+    {"instance_test", (PyCFunction)py_instance_test, METH_O, "TODO"},
+    {"notinstance_test", (PyCFunction)py_notinstance_test, METH_O, "TODO"},
+    {"typeof", (PyCFunction)py_typeof, METH_O, "TODO"},
     {"identity", (PyCFunction)identity, METH_O, "TODO"},
     {"apply", (PyCFunction)apply_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
     {"first_arg", (PyCFunction)first_arg_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
-    {"partial", (PyCFunction)partial_impl, METH_FASTCALL, "TODO"},
+    // {"partial", (PyCFunction)partial_impl, METH_FASTCALL, "TODO"},
     {"dispatch", (PyCFunction)dispatch_impl, METH_FASTCALL, "TODO"},
     {"firstof", (PyCFunction)firstof_impl, METH_FASTCALL, "TODO"},
     {NULL, NULL, 0, NULL}  // Sentinel
@@ -77,6 +118,7 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
 
     PyTypeObject * hidden_types[] = {
         &FirstOf_Type,
+        &InstanceTest_Type,
         nullptr
     };
 
@@ -112,6 +154,10 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &IfThenElse_Type,
         &AnyArgs_Type,
         &Walker_Type,
+        &Always_Type,
+        &SelfApply_Type,
+        &TransformApply_Type,
+        &Constantly_Type,
         // &When_Type,
 
         // &WhenNot_Type,

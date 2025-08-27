@@ -3,7 +3,9 @@
 struct Partial : public PyVarObject {
     vectorcallfunc vectorcall;
     // std::vector<std::pair<PyTypeObject *, PyObject *>> dispatch;
+    PyObject *dict;
     PyObject * function;        
+    vectorcallfunc function_vectorcall;
     PyObject * args[];
 
     static int clear(Partial* self) {
@@ -23,7 +25,9 @@ struct Partial : public PyVarObject {
     }
     
     static void dealloc(Partial *self) {
+
         PyObject_GC_UnTrack(self);          // Untrack from the GC
+
         clear(self);
         Py_TYPE(self)->tp_free((PyObject *)self);  // Free the object
     }
@@ -33,40 +37,57 @@ struct Partial : public PyVarObject {
         size_t nargs = PyVectorcall_NARGS(nargsf) + (kwnames ? PyTuple_GET_SIZE(kwnames) : 0);
 
         if (nargs == 0) {
-            return PyObject_Vectorcall(self->function, self->args, self->ob_size, nullptr);
+            return self->function_vectorcall(self->function, self->args, self->ob_size, nullptr);
         } else {
             size_t total_args = self->ob_size + nargs;
 
-            PyObject * on_stack[SMALL_ARGS + 1];
-            PyObject ** buffer;
-
-            if (total_args >= SMALL_ARGS) {
-                buffer = (PyObject **)PyMem_Malloc(sizeof(PyObject *) * (total_args + 1));
-                if (!buffer) {
-                    return nullptr;
-                }
-            } else {
-                buffer = on_stack;
-            }
+            PyObject ** mem = (PyObject **)alloca(sizeof(PyObject *) * (total_args + 1)) + 1;
 
             for (size_t i = 0; i < (size_t)self->ob_size; i++) {
-                buffer[i + 1] = self->args[i];
+                mem[i] = self->args[i];
             }
 
             for (size_t i = 0; i < nargs; i++) {
-                buffer[i + 1 + self->ob_size] = args[i];
+                mem[i + self->ob_size] = args[i];
             }
 
             nargsf = (self->ob_size + PyVectorcall_NARGS(nargsf)) | PY_VECTORCALL_ARGUMENTS_OFFSET;
 
-            PyObject * result = PyObject_Vectorcall(self->function, buffer + 1, nargsf, kwnames);
-
-            if (buffer != on_stack) {
-                PyMem_Free(buffer);
-            }
-            return result;
+            return self->function_vectorcall(self->function, mem, nargsf, kwnames);
         }
-    }    
+    }
+
+    static PyObject* create(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+        if (PyTuple_Size(args) == 0) {
+            PyErr_SetString(PyExc_TypeError, "partial requires at least one positional argument");
+            return nullptr;
+        }
+
+        // Use PyObject_NewVar to allocate memory for the object
+        // Partial* self = (Partial *)Partial_Type.tp_alloc(&Partial_Type, PyTuple_Size(args) - 1);
+        Partial* self = (Partial *)Partial_Type.tp_alloc(type, PyTuple_Size(args) - 1);
+        
+        // Check if the allocation was successful
+        if (self == NULL) {
+            return NULL; // Return NULL on error
+        }
+
+        self->function = Py_NewRef(PyTuple_GetItem(args, 0));
+        self->function_vectorcall = extract_vectorcall(self->function);
+
+        for (Py_ssize_t i = 0; i < self->ob_size; i++) {
+            self->args[i] = Py_NewRef(PyTuple_GetItem(args, i + 1));
+        }
+
+        self->vectorcall = (vectorcallfunc)Partial::call;
+        self->dict = NULL;
+
+        return (PyObject*)self;
+    }
+
+    static PyObject* descr_get(PyObject *self, PyObject *obj, PyObject *type) {
+        return obj == NULL || obj == Py_None ? Py_NewRef(self) : PyMethod_New(self, obj);
+    }
 };
 
 PyTypeObject Partial_Type = {
@@ -77,14 +98,21 @@ PyTypeObject Partial_Type = {
     .tp_dealloc = (destructor)Partial::dealloc,
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(Partial, vectorcall),
     .tp_call = PyVectorcall_Call,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
+    .tp_flags = Py_TPFLAGS_DEFAULT | 
+                Py_TPFLAGS_HAVE_GC | 
+                Py_TPFLAGS_HAVE_VECTORCALL | 
+                Py_TPFLAGS_METHOD_DESCRIPTOR |
+                Py_TPFLAGS_BASETYPE,
     .tp_doc = "TODO",
     .tp_traverse = (traverseproc)Partial::traverse,
     .tp_clear = (inquiry)Partial::clear,
+    .tp_descr_get = Partial::descr_get,
+    .tp_dictoffset = OFFSET_OF_MEMBER(Partial, dict), // Set the offset here
+
     // .tp_methods = methods,
     // .tp_members = members,
-    // .tp_new = (newfunc)create,
-    // .tp_init = (initproc)TypePredWalker::init,
+    .tp_new = (newfunc)Partial::create,
+    // .tp_init = (initproc)Partial::init,
     // .tp_new = PyType_GenericNew,
 };
 

@@ -1,5 +1,12 @@
 #pragma once
 
+#if defined(__GNUC__) || defined(__clang__)
+#include <alloca.h>
+#elif defined(_MSC_VER)
+#include <malloc.h>
+#define alloca _alloca
+#endif
+
 #include <signal.h>
 
 #include <Python.h>
@@ -11,6 +18,7 @@
 #define OFFSET_OF_MEMBER(type, member) \
     ((Py_ssize_t) &reinterpret_cast<const volatile char&>((((type*)0)->member)))
 
+extern PyTypeObject InstanceTest_Type;
 extern PyTypeObject CallAll_Type;
 extern PyTypeObject Observer_Type;
 extern PyTypeObject Compose_Type;
@@ -41,8 +49,17 @@ extern PyTypeObject TernaryPredicate_Type;
 extern PyTypeObject IfThenElse_Type;
 extern PyTypeObject AnyArgs_Type;
 extern PyTypeObject FirstOf_Type;
+extern PyTypeObject Always_Type;
+extern PyTypeObject SelfApply_Type;
+extern PyTypeObject TransformApply_Type;
+extern PyTypeObject Constantly_Type;
 // extern PyTypeObject When_Type;
 // extern PyTypeObject WhenNot_Type;
+
+PyObject * instanceof_andnot(PyTypeObject * cls, PyTypeObject * andnot);
+PyObject * instance_test(PyTypeObject * cls);
+PyObject * notinstance_test(PyTypeObject * cls);
+PyObject * instanceof(PyTypeObject * cls);
 
 extern PyObject * ThreadLocalError;
 

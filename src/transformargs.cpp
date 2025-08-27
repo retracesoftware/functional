@@ -2,12 +2,6 @@
 #include <structmember.h>
 #include <signal.h>
 
-#if defined(__GNUC__) || defined(__clang__)
-#include <alloca.h>
-#elif defined(_MSC_VER)
-#include <malloc.h>
-#define alloca _alloca
-#endif
 
 struct TransformArgs {
     PyObject_HEAD
@@ -29,7 +23,7 @@ static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObjec
     for (int i = 0; i < from; i++) {
         mem[i] = args[i];
     }
-    for (int i = from; i < nargs; i++) {
+    for (size_t i = from; i < nargs; i++) {
         mem[i] = self->transform_vectorcall(self->transform, args + i, 1, nullptr);
 
         if (!mem[i]) {
