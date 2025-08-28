@@ -7,6 +7,10 @@ project('retracesoftware_functional', 'cpp', default_options: ['cpp_std=c++20'])
 py = import('python').find_installation()
 fs = import('fs')
 
+py.install_sources(
+  'src/functional.py',
+  subdir: 'retracesoftware')
+
 py.extension_module(
   'retracesoftware_functional',
   ['src/functional.cpp',
@@ -51,5 +55,5 @@ py.extension_module(
   
   # If you want extra flags:
   # cpp_args: ['-O3', '-fvisibility=hidden'],
-  # include_directories: include_directories('.'),
+  include_directories: include_directories('common-headers/include'),
 )

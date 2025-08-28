@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fastcall.h"
+
 #if defined(__GNUC__) || defined(__clang__)
 #include <alloca.h>
 #elif defined(_MSC_VER)

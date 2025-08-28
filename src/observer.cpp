@@ -20,11 +20,8 @@ static inline bool call_void(vectorcallfunc vectorcall, PyObject * callable, PyO
 }
 
 static PyObject * call(Observer * self, PyObject* const * args, size_t nargsf, PyObject* kwnames) {
-
-    printf("In observer.call\n");
     
     if (self->on_call) {
-        printf("About to call ob_call\n");
         if (!call_void(PyObject_Vectorcall, self->on_call, args, nargsf, kwnames)) {
             return nullptr;
         }

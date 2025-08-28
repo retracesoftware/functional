@@ -3,20 +3,15 @@
 #include "pyerrors.h"
 #include <structmember.h>
 
-struct Pair {
-    vectorcallfunc vectorcall;
-    PyObject * callable;
-};
-
 struct FirstOf : public PyVarObject {
     vectorcallfunc vectorcall;
     // std::vector<std::pair<PyTypeObject *, PyObject *>> dispatch;
-    Pair dispatch[];
+    retracesoftware::FastCall dispatch[];
 };
 
 static PyObject * vectorcall(FirstOf * self, PyObject** args, size_t nargsf, PyObject* kwnames) {
 
-    Pair * pair = self->dispatch;
+    retracesoftware::FastCall * pair = self->dispatch;
 
     for (size_t i = 0; i < (size_t)self->ob_size - 1; i++) {
 
@@ -61,7 +56,7 @@ PyTypeObject FirstOf_Type = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = MODULE "firstof",
     .tp_basicsize = sizeof(FirstOf),
-    .tp_itemsize = sizeof(Pair),
+    .tp_itemsize = sizeof(retracesoftware::FastCall),
     .tp_dealloc = (destructor)dealloc,
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(FirstOf, vectorcall),
     .tp_call = PyVectorcall_Call,
@@ -82,8 +77,7 @@ PyObject * firstof(PyObject * const * args, size_t nargs) {
     }
 
     for (size_t i = 0; i < nargs; i++) {
-        self->dispatch[i].vectorcall = extract_vectorcall(args[i]);
-        self->dispatch[i].callable = Py_NewRef(args[i]);
+        self->dispatch[i] = retracesoftware::FastCall(Py_NewRef(args[i]));
     }
 
     self->vectorcall = (vectorcallfunc)vectorcall;

@@ -51,7 +51,7 @@ struct TransformApply : public PyVarObject {
             return nullptr;
         }
 
-        PyObject ** mem = (PyObject **)alloca(sizeof(PyObject *) * max(nargs, self->ob_size)) + 1;
+        PyObject ** mem = (PyObject **)alloca(sizeof(PyObject *) * nargs) + 1;
 
         // if (nargs < self->ob_size) {
             

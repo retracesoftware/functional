@@ -35,7 +35,7 @@ static PyObject * dispatch_impl(PyObject *self, PyObject *const *args, Py_ssize_
 }
 
 static PyObject * firstof_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
-    return firstof(args + 1, nargs - 1);
+    return firstof(args, nargs);
 }
 
 static PyObject * py_typeof(PyObject *self, PyObject *obj) { return Py_NewRef((PyObject *)Py_TYPE(obj)); }
