@@ -25,10 +25,14 @@ static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObjec
     }
     for (size_t i = from; i < nargs; i++) {
         mem[i] = self->transform_vectorcall(self->transform, args + i, 1, nullptr);
-                
+        
+        // if (mem[i] && (Py_REFCNT(mem[i]) < 0 || Py_REFCNT(mem[i]) > 10000000000)) {
+        //     raise(SIGTRAP);
+        //     mem[i] = self->transform_vectorcall(self->transform, args + i, 1, nullptr);
+        // }
+
         if (!mem[i]) {
-            raise(SIGTRAP);
-            for (int j = from; j < i; i++) Py_DECREF(mem[j]);
+            for (int j = from; j < i; j++) Py_DECREF(mem[j]);
             return nullptr;
         }
     }

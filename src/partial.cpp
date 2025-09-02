@@ -32,6 +32,10 @@ struct Partial : public PyVarObject {
         Py_TYPE(self)->tp_free((PyObject *)self);  // Free the object
     }
 
+    static PyObject * getattro(Partial *self, PyObject *name) {
+        return PyObject_GetAttr(self->function, name);
+    }
+
     static PyObject * call(Partial * self, PyObject** args, size_t nargsf, PyObject* kwnames) {
 
         size_t nargs = PyVectorcall_NARGS(nargsf) + (kwnames ? PyTuple_GET_SIZE(kwnames) : 0);
@@ -98,6 +102,7 @@ PyTypeObject Partial_Type = {
     .tp_dealloc = (destructor)Partial::dealloc,
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(Partial, vectorcall),
     .tp_call = PyVectorcall_Call,
+    .tp_getattro = (getattrofunc)Partial::getattro,
     .tp_flags = Py_TPFLAGS_DEFAULT | 
                 Py_TPFLAGS_HAVE_GC | 
                 Py_TPFLAGS_HAVE_VECTORCALL | 

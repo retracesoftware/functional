@@ -22,15 +22,17 @@ static PyObject * vectorcall(IfThenElse * self, PyObject** args, size_t nargsf, 
     int is_true = PyObject_IsTrue(test_res);
     Py_DECREF(test_res);
 
+    int nargs = PyVectorcall_NARGS(nargsf);
+
     switch (is_true) {
         case 1:
             return self->then 
                 ? self->then_vectorcall(self->then, args, nargsf, kwnames)
-                : Py_NewRef(Py_None);
+                : Py_NewRef(nargs == 1 ? args[0] : Py_None);
         case 0:
             return self->otherwise 
                 ? self->otherwise_vectorcall(self->otherwise, args, nargsf, kwnames) 
-                : Py_NewRef(Py_None);
+                : Py_NewRef(nargs == 1 ? args[0] : Py_None);
         default:
             return nullptr;
     }
