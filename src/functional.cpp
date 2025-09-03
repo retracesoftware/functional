@@ -128,7 +128,6 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
 
     PyTypeObject * types[] = {
         &CallAll_Type,
-        &Observer_Type,
         &Compose_Type,
         &SideEffect_Type,
         &Repeatedly_Type,
@@ -158,6 +157,7 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &SelfApply_Type,
         &TransformApply_Type,
         &Constantly_Type,
+        &Either_Type,
         // &When_Type,
 
         // &WhenNot_Type,

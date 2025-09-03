@@ -22,7 +22,6 @@
 
 extern PyTypeObject InstanceTest_Type;
 extern PyTypeObject CallAll_Type;
-extern PyTypeObject Observer_Type;
 extern PyTypeObject Compose_Type;
 extern PyTypeObject SideEffect_Type;
 extern PyTypeObject Repeatedly_Type;
@@ -55,6 +54,7 @@ extern PyTypeObject Always_Type;
 extern PyTypeObject SelfApply_Type;
 extern PyTypeObject TransformApply_Type;
 extern PyTypeObject Constantly_Type;
+extern PyTypeObject Either_Type;
 // extern PyTypeObject When_Type;
 // extern PyTypeObject WhenNot_Type;
 

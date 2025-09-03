@@ -14,7 +14,6 @@ py.install_sources(
 py.extension_module(
   'retracesoftware_functional',
   ['src/functional.cpp',
-   'src/observer.cpp',
    'src/callall.cpp',
    'src/sideeffect.cpp',
    'src/compose.cpp',
@@ -48,7 +47,8 @@ py.extension_module(
     'src/always.cpp',
     'src/selfapply.cpp',
     'src/transformapply.cpp',
-    'src/constantly.cpp'
+    'src/constantly.cpp',
+    'src/either.cpp'
     ],
   install: true,
   link_args: ['-g'],
