@@ -1,6 +1,6 @@
 [project]
 name = "retracesoftware_functional"
-version = "0.1.2"
+version = "0.1.3"
 description = "High-performance functional utilities implemented as a Python C/C++ extension"
 readme = "README.md"
 license = {text = "Apache-2.0"}
