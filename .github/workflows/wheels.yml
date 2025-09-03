@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  build-and-publish-macos:
+  build_macos:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
         run: |
           python - << 'PY'
           import os, tomllib
-          tag = os.environ['GITHUB_REF_NAME'].split('functional-v', 1)[1]
+          tag = os.environ['GITHUB_REF_NAME'].split('-', 1)[1]
           with open('pyproject.toml','rb') as f:
               version = tomllib.load(f)['project']['version']
           assert version == tag, f"version mismatch: tag={tag} pyproject={version}"
@@ -41,15 +41,31 @@ jobs:
           CIBW_BUILD: "cp311-*"
           CIBW_SKIP: "cp38-* cp39-* cp310-* cp312-* cp313-* cp314-*"
           CIBW_ARCHS_MACOS: "x86_64 arm64"
-          # meson projects (functional/utils/stream) need these:
           CIBW_BEFORE_BUILD: |
             python -m pip install --upgrade pip setuptools wheel
             python -m pip install meson meson-python ninja
-          # Minimal import test — set per repo:
-          CIBW_TEST_COMMAND: python -c "import retracesoftware_functional; print('ok')" # change per repo
+          CIBW_TEST_COMMAND: python -c "import retracesoftware_functional; print('ok')"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-wheels
+          path: wheelhouse/*.whl
+          retention-days: 7
+
+  publish_pypi:
+    if: startsWith(github.ref, 'refs/tags/functional-v')
+    needs: build_macos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-wheels
+          path: upload
 
       - name: Publish to PyPI (Trusted Publisher)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: wheelhouse
+          packages-dir: upload
           skip-existing: true
