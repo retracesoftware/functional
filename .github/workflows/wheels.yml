@@ -26,7 +26,7 @@ jobs:
         run: |
           python - << 'PY'
           import os, tomllib
-          tag = os.environ['GITHUB_REF_NAME'].split('-', 1)[1]
+          tag = os.environ['GITHUB_REF_NAME'].split('functional-v', 1)[1]
           with open('pyproject.toml','rb') as f:
               version = tomllib.load(f)['project']['version']
           assert version == tag, f"version mismatch: tag={tag} pyproject={version}"
