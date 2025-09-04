@@ -82,7 +82,7 @@ jobs:
         env:
           CIBW_BUILD: "cp311-*"
           CIBW_SKIP: "cp38-* cp39-* cp310-* cp312-* cp313-* cp314-*"
-          CIBW_ARCHS_LINUX: "x86_64"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64"
           CIBW_BEFORE_BUILD: |
             python -m pip install --upgrade pip setuptools wheel
             python -m pip install meson meson-python ninja
