@@ -158,6 +158,7 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &TransformApply_Type,
         &Constantly_Type,
         &Either_Type,
+        &Compose2_Type,
         // &When_Type,
 
         // &WhenNot_Type,

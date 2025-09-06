@@ -32,7 +32,7 @@ static PyObject * weakref_callback(Memoize * self, PyObject * weakref) {
     if (it != self->weakref_to_key.end()) {
         self->weakref_to_key.erase(it);
         delete_key(self, it->second);
-        Py_DECREF(it->first);
+        // Py_DECREF(it->first);
     }
     Py_RETURN_NONE;
 }

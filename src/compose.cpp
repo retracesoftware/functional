@@ -160,7 +160,7 @@ static int init(Compose *self, PyObject *args, PyObject *kwds) {
 
 PyTypeObject Compose_Type = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = MODULE "compose",
+    .tp_name = MODULE "composeN",
     .tp_basicsize = sizeof(Compose),
     .tp_itemsize = 0,
     .tp_dealloc = (destructor)dealloc,

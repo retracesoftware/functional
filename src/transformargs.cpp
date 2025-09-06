@@ -3,13 +3,11 @@
 #include <signal.h>
 
 
-struct TransformArgs {
-    PyObject_HEAD
+struct TransformArgs : public PyObject {
     int from;
-    PyObject * func;
-    vectorcallfunc func_vectorcall;
-    PyObject * transform;
-    vectorcallfunc transform_vectorcall;
+    // PyObject * func;
+    retracesoftware::FastCall func;
+    retracesoftware::FastCall transform;
     vectorcallfunc vectorcall;
 };
 
@@ -23,8 +21,8 @@ static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObjec
     for (int i = 0; i < from; i++) {
         mem[i] = args[i];
     }
-    for (size_t i = from; i < nargs; i++) {
-        mem[i] = self->transform_vectorcall(self->transform, args + i, 1, nullptr);
+    for (size_t i = from; i < all; i++) {
+        mem[i] = self->transform(args + i, 1, nullptr);
         
         // if (mem[i] && (Py_REFCNT(mem[i]) < 0 || Py_REFCNT(mem[i]) > 10000000000)) {
         //     raise(SIGTRAP);
@@ -32,12 +30,12 @@ static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObjec
         // }
 
         if (!mem[i]) {
-            for (int j = from; j < i; j++) Py_DECREF(mem[j]);
+            for (size_t j = from; j < i; j++) Py_DECREF(mem[j]);
             return nullptr;
         }
     }
 
-    PyObject * result = self->func_vectorcall(self->func, mem, nargs | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
+    PyObject * result = self->func(mem, nargs | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
 
     for (int i = from; i < all; i++) Py_XDECREF(mem[i]);
 
@@ -108,14 +106,14 @@ static PyObject * vectorcallN(TransformArgs * self, PyObject* const * args, size
 // }
 
 static int traverse(TransformArgs* self, visitproc visit, void* arg) {
-    Py_VISIT(self->transform);
-    Py_VISIT(self->func);
+    Py_VISIT(self->transform.callable);
+    Py_VISIT(self->func.callable);
     return 0;
 }
 
 static int clear(TransformArgs* self) {
-    Py_CLEAR(self->transform);
-    Py_CLEAR(self->func);
+    Py_CLEAR(self->transform.callable);
+    Py_CLEAR(self->func.callable);
     return 0;
 }
 
@@ -137,7 +135,19 @@ static vectorcallfunc select_vectorallfunc(int from) {
     }
 }
 
-static PyObject * create(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+static PyObject * getattro(TransformArgs *self, PyObject *name) {
+    return PyObject_GetAttr(self->func.callable, name);
+}
+
+static int setattro(TransformArgs *self, PyObject *name, PyObject * value) {
+    PyObject * transformed = self->transform(value);
+    if (!transformed) return -1;
+    int res = PyObject_SetAttr(self->func.callable, name, transformed);
+    Py_DECREF(transformed);
+    return res;
+}
+
+static int init(TransformArgs * self, PyObject *args, PyObject *kwds) {
 
     PyObject * function;
     PyObject * transform;
@@ -146,25 +156,23 @@ static PyObject * create(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     static const char *kwlist[] = {"function", "transform", "starting", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|i", (char **)kwlist, &function, &transform, &from)) {
-        return nullptr; // Return NULL on failure
+        return -1; // Return NULL on failure
     }
     
-    TransformArgs * self = (TransformArgs *)type->tp_alloc(type, 0);
+    self->transform = retracesoftware::FastCall(transform);
+    self->func = retracesoftware::FastCall(function);
 
-    if (!self) {
-        return nullptr;
-    }
-
-    self->transform = Py_NewRef(transform);
-    self->transform_vectorcall = extract_vectorcall(transform);
-
-    self->func = Py_NewRef(function);
-    self->func_vectorcall = extract_vectorcall(function);
+    Py_INCREF(function);
+    Py_INCREF(transform);
 
     self->from = from;
     self->vectorcall = select_vectorallfunc(from);
 
-    return (PyObject *)self;
+    return 0;
+}
+
+static PyObject* descr_get(PyObject *self, PyObject *obj, PyObject *type) {
+    return obj == NULL || obj == Py_None ? Py_NewRef(self) : PyMethod_New(self, obj);
 }
 
 PyTypeObject TransformArgs_Type = {
@@ -173,13 +181,20 @@ PyTypeObject TransformArgs_Type = {
     .tp_basicsize = sizeof(TransformArgs),
     .tp_itemsize = 0,
     .tp_dealloc = (destructor)dealloc,
-    .tp_vectorcall_offset = offsetof(TransformArgs, vectorcall),
+    .tp_vectorcall_offset = OFFSET_OF_MEMBER(TransformArgs, vectorcall),
     .tp_call = PyVectorcall_Call,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
+    .tp_getattro = (getattrofunc)getattro,
+    .tp_setattro = (setattrofunc)setattro,
+    .tp_flags = Py_TPFLAGS_DEFAULT |
+                Py_TPFLAGS_HAVE_GC | 
+                Py_TPFLAGS_HAVE_VECTORCALL | 
+                Py_TPFLAGS_METHOD_DESCRIPTOR,
     .tp_doc = "TODO",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,
     .tp_members = members,
-    .tp_new = (newfunc)create,
+    .tp_descr_get = descr_get,
+    .tp_init = (initproc)init,
+    .tp_new = PyType_GenericNew,
 };

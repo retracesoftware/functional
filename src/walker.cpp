@@ -148,8 +148,14 @@ static PyObject * call(Walker * self, PyObject* const * args, size_t nargsf, PyO
     int nargs = PyVectorcall_NARGS(nargsf);
 
     if (nargs != 1 || kwnames) {
-        PyErr_SetString(PyExc_TypeError, "Walker currently only takessingle positional parameter");
-        return nullptr;
+        if (nargs != 1) {
+            raise(SIGTRAP);
+            PyErr_Format(PyExc_TypeError, "%S currently only takes single positional parameter, %i passed", Py_TYPE(self), nargs);
+            return nullptr;
+        } else {
+            PyErr_Format(PyExc_TypeError, "%S currently only takes single positional parameter, keywords: %S passed", Py_TYPE(self), kwnames);
+            return nullptr;
+        }
     }
     return walk(self, args[0]);
 }

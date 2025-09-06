@@ -55,6 +55,8 @@ extern PyTypeObject SelfApply_Type;
 extern PyTypeObject TransformApply_Type;
 extern PyTypeObject Constantly_Type;
 extern PyTypeObject Either_Type;
+extern PyTypeObject Compose2_Type;
+
 // extern PyTypeObject When_Type;
 // extern PyTypeObject WhenNot_Type;
 

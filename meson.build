@@ -48,7 +48,8 @@ py.extension_module(
     'src/selfapply.cpp',
     'src/transformapply.cpp',
     'src/constantly.cpp',
-    'src/either.cpp'
+    'src/either.cpp',
+    'src/compose2.cpp'
     ],
   install: true,
   link_args: ['-g'],
