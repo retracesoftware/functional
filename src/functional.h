@@ -52,7 +52,7 @@ extern PyTypeObject AnyArgs_Type;
 extern PyTypeObject FirstOf_Type;
 extern PyTypeObject Always_Type;
 extern PyTypeObject SelfApply_Type;
-extern PyTypeObject TransformApply_Type;
+extern PyTypeObject Spread_Type;
 extern PyTypeObject Constantly_Type;
 extern PyTypeObject Either_Type;
 extern PyTypeObject Compose2_Type;

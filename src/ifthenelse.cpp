@@ -4,19 +4,17 @@
 struct IfThenElse {
     PyObject_HEAD
     int from_arg;
-    PyObject * test;
-    vectorcallfunc test_vectorcall;
-
-    PyObject * then;
-    vectorcallfunc then_vectorcall;
-    PyObject * otherwise;
-    vectorcallfunc otherwise_vectorcall;
+    retracesoftware::FastCall test;
+    retracesoftware::FastCall then;
+    retracesoftware::FastCall otherwise;
     vectorcallfunc vectorcall;
 };
 
 static PyObject * vectorcall(IfThenElse * self, PyObject** args, size_t nargsf, PyObject* kwnames) {
     
-    PyObject * test_res = self->test_vectorcall(self->test, args + self->from_arg, PyVectorcall_NARGS(nargsf) - self->from_arg, kwnames);
+    assert (!PyErr_Occurred());
+
+    PyObject * test_res = self->test(args + self->from_arg, PyVectorcall_NARGS(nargsf) - self->from_arg, kwnames);
 
     if (!test_res) return nullptr;
     int is_true = PyObject_IsTrue(test_res);
@@ -26,12 +24,12 @@ static PyObject * vectorcall(IfThenElse * self, PyObject** args, size_t nargsf, 
 
     switch (is_true) {
         case 1:
-            return self->then 
-                ? self->then_vectorcall(self->then, args, nargsf, kwnames)
+            return self->then.callable 
+                ? self->then(args, nargsf, kwnames)
                 : Py_NewRef(nargs == 1 ? args[0] : Py_None);
         case 0:
-            return self->otherwise 
-                ? self->otherwise_vectorcall(self->otherwise, args, nargsf, kwnames) 
+            return self->otherwise.callable
+                ? self->otherwise(args, nargsf, kwnames) 
                 : Py_NewRef(nargs == 1 ? args[0] : Py_None);
         default:
             return nullptr;
@@ -39,17 +37,17 @@ static PyObject * vectorcall(IfThenElse * self, PyObject** args, size_t nargsf, 
 }
 
 static int traverse(IfThenElse* self, visitproc visit, void* arg) {
-    Py_VISIT(self->test);
-    Py_VISIT(self->then);
-    Py_VISIT(self->otherwise);
+    Py_VISIT(self->test.callable);
+    Py_VISIT(self->then.callable);
+    Py_VISIT(self->otherwise.callable);
 
     return 0;
 }
 
 static int clear(IfThenElse* self) {
-    Py_CLEAR(self->test);
-    Py_CLEAR(self->then);
-    Py_CLEAR(self->otherwise);
+    Py_CLEAR(self->test.callable);
+    Py_CLEAR(self->then.callable);
+    Py_CLEAR(self->otherwise.callable);
     return 0;
 }
 
@@ -87,16 +85,16 @@ static int init(IfThenElse *self, PyObject *args, PyObject *kwds) {
     CHECK_CALLABLE(then);
     CHECK_CALLABLE(otherwise);
     
-    self->test = Py_XNewRef(test);
-    self->test_vectorcall = extract_vectorcall(test);
+    self->test = retracesoftware::FastCall(test);
+    Py_INCREF(test);
 
     if (then) {
-        self->then = Py_XNewRef(then);
-        self->then_vectorcall = extract_vectorcall(then);
+        self->then = retracesoftware::FastCall(then);
+        Py_INCREF(then);
     }
     if (otherwise) {
-        self->otherwise = Py_XNewRef(otherwise);
-        self->otherwise_vectorcall = extract_vectorcall(otherwise);
+        self->otherwise = retracesoftware::FastCall(otherwise);
+        Py_INCREF(otherwise);
     }
     self->vectorcall = (vectorcallfunc)vectorcall;
     self->from_arg = from_arg;

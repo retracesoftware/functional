@@ -46,7 +46,7 @@ py.extension_module(
     'src/firstof.cpp',
     'src/always.cpp',
     'src/selfapply.cpp',
-    'src/transformapply.cpp',
+    'src/spread.cpp',
     'src/constantly.cpp',
     'src/either.cpp',
     'src/compose2.cpp'

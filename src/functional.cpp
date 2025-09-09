@@ -155,7 +155,7 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &Walker_Type,
         &Always_Type,
         &SelfApply_Type,
-        &TransformApply_Type,
+        &Spread_Type,
         &Constantly_Type,
         &Either_Type,
         &Compose2_Type,

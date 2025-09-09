@@ -128,6 +128,8 @@ static PyObject * walk_dict(Walker * self, PyObject * dict) {
 
 static PyObject * walk(Walker * self, PyObject * arg) {
 
+    assert (!PyErr_Occurred());
+
     if (arg == Py_None) return Py_NewRef(Py_None);
 
     PyTypeObject * cls = Py_TYPE(arg);
@@ -139,11 +141,16 @@ static PyObject * walk(Walker * self, PyObject * arg) {
     } else if (cls == &PyDict_Type) {
         return walk_dict(self, arg);
     } else {
-        return self->func_vectorcall(self->func, &arg, 1, nullptr);
+        PyObject * res = self->func_vectorcall(self->func, &arg, 1, nullptr);
+        assert ((res && !PyErr_Occurred()) || (!res && PyErr_Occurred()));
+        return res;
+        // return self->func_vectorcall(self->func, &arg, 1, nullptr);
     }
 }
 
 static PyObject * call(Walker * self, PyObject* const * args, size_t nargsf, PyObject* kwnames) {
+
+    assert (!PyErr_Occurred());
 
     int nargs = PyVectorcall_NARGS(nargsf);
 
