@@ -10,7 +10,7 @@ def when(test, then):
 def when_instanceof(cls, then):
     return when(_functional.isinstanceof(cls), then)
 
-repeatedly = always
+# repeatedly = always
 
 # TODO, compose is wrong order at the moment
 

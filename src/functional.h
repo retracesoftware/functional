@@ -20,11 +20,14 @@
 #define OFFSET_OF_MEMBER(type, member) \
     ((Py_ssize_t) &reinterpret_cast<const volatile char&>((((type*)0)->member)))
 
+
+extern PyType_Spec Repeatedly_Spec;
+
 extern PyTypeObject InstanceTest_Type;
 extern PyTypeObject CallAll_Type;
 extern PyTypeObject Compose_Type;
 extern PyTypeObject SideEffect_Type;
-extern PyTypeObject Repeatedly_Type;
+// extern PyTypeObject Repeatedly_Type;
 extern PyTypeObject NotPredicate_Type;
 extern PyTypeObject AndPredicate_Type;
 extern PyTypeObject OrPredicate_Type;
@@ -35,7 +38,6 @@ extern PyTypeObject Advice_Type;
 extern PyTypeObject WhenPredicate_Type;
 extern PyTypeObject CasePredicate_Type;
 extern PyTypeObject Memoize_Type;
-
 extern PyTypeObject ManyPredicate_Type;
 extern PyTypeObject Walker_Type;
 extern PyTypeObject Cache_Type;

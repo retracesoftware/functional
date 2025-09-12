@@ -1,5 +1,6 @@
 #include "functional.h"
 #include "object.h"
+#include <cstddef>
 
 static PyObject * apply_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargsf, PyObject *kwnames) {
     size_t nargs = PyVectorcall_NARGS(nargsf);
@@ -126,14 +127,33 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         PyType_Ready(hidden_types[i]);
     }
 
+    PyType_Spec * specs[] = {
+        &Repeatedly_Spec,
+        NULL
+    };
+
+    for (int i = 0; specs[i]; i++) {
+        PyTypeObject * cls = (PyTypeObject *)PyType_FromSpec(specs[i]);
+        if (!cls) return nullptr;
+        
+        const char *last_dot = strrchr(cls->tp_name, '.');
+
+        // If a dot is found, the substring starts after the dot
+        const char *name = (last_dot != NULL) ? (last_dot + 1) : cls->tp_name;
+
+        PyModule_AddObject(module, name, (PyObject *)cls);
+    }
+
+
     PyTypeObject * types[] = {
         &CallAll_Type,
         &Compose_Type,
         &SideEffect_Type,
-        &Repeatedly_Type,
+        // &Repeatedly_Type,
         &ManyPredicate_Type,
         &NotPredicate_Type,
         &AndPredicate_Type,
+
         &OrPredicate_Type,
         &TypePredicate_Type,
         &TransformArgs_Type,
@@ -142,6 +162,7 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &WhenPredicate_Type,
         &CasePredicate_Type,
         &Memoize_Type,
+
         &Cache_Type,
         &ThreadLocalProxy_Type,
         &Partial_Type,
@@ -159,14 +180,16 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &Constantly_Type,
         &Either_Type,
         &Compose2_Type,
-        // &When_Type,
-
-        // &WhenNot_Type,
         NULL
     };
-        
+    
     for (int i = 0; types[i]; i++) {
-        PyType_Ready(types[i]);
+        if (PyType_Ready(types[i]) != 0) {
+            return nullptr;
+        }
+    }
+
+    for (int i = 0; types[i]; i++) {
 
         // Find the last dot in the string
         const char *last_dot = strrchr(types[i]->tp_name, '.');
