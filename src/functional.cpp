@@ -129,6 +129,7 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
 
     PyType_Spec * specs[] = {
         &Repeatedly_Spec,
+        &DropArgs_Spec,
         NULL
     };
 

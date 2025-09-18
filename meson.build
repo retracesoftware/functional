@@ -49,7 +49,8 @@ py.extension_module(
     'src/spread.cpp',
     'src/constantly.cpp',
     'src/either.cpp',
-    'src/compose2.cpp'
+    'src/compose2.cpp',
+    'src/dropargs.cpp'
     ],
   install: true,
   link_args: ['-g'],

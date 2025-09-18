@@ -4,12 +4,13 @@ struct Partial : public PyVarObject {
     vectorcallfunc vectorcall;
     // std::vector<std::pair<PyTypeObject *, PyObject *>> dispatch;
     PyObject *dict;
-    PyObject * function;        
-    vectorcallfunc function_vectorcall;
+    retracesoftware::FastCall function;
+    // PyObject * function;        
+    // vectorcallfunc function_vectorcall;
     PyObject * args[];
 
     static int clear(Partial* self) {
-        Py_CLEAR(self->function);
+        Py_CLEAR(self->function.callable);
         for (int i = 0; i < self->ob_size; i++) {
             Py_CLEAR(self->args[i]);
         }
@@ -17,7 +18,7 @@ struct Partial : public PyVarObject {
     }
     
     static int traverse(Partial* self, visitproc visit, void* arg) {
-        Py_VISIT(self->function);
+        Py_VISIT(self->function.callable);
         for (int i = 0; i < self->ob_size; i++) {
             Py_VISIT(self->args[i]);
         }
@@ -33,7 +34,7 @@ struct Partial : public PyVarObject {
     }
 
     static PyObject * getattro(Partial *self, PyObject *name) {
-        return PyObject_GetAttr(self->function, name);
+        return PyObject_GetAttr(self->function.callable, name);
     }
 
     static PyObject * call(Partial * self, PyObject** args, size_t nargsf, PyObject* kwnames) {
@@ -41,7 +42,7 @@ struct Partial : public PyVarObject {
         size_t nargs = PyVectorcall_NARGS(nargsf) + (kwnames ? PyTuple_GET_SIZE(kwnames) : 0);
 
         if (nargs == 0) {
-            return self->function_vectorcall(self->function, self->args, self->ob_size, nullptr);
+            return self->function(self->args, self->ob_size, nullptr);
         } else {
             size_t total_args = self->ob_size + nargs;
 
@@ -57,7 +58,7 @@ struct Partial : public PyVarObject {
 
             nargsf = (self->ob_size + PyVectorcall_NARGS(nargsf)) | PY_VECTORCALL_ARGUMENTS_OFFSET;
 
-            return self->function_vectorcall(self->function, mem, nargsf, kwnames);
+            return self->function(mem, nargsf, kwnames);
         }
     }
 
@@ -76,8 +77,7 @@ struct Partial : public PyVarObject {
             return NULL; // Return NULL on error
         }
 
-        self->function = Py_NewRef(PyTuple_GetItem(args, 0));
-        self->function_vectorcall = extract_vectorcall(self->function);
+        self->function = retracesoftware::FastCall(Py_NewRef(PyTuple_GetItem(args, 0)));
 
         for (Py_ssize_t i = 0; i < self->ob_size; i++) {
             self->args[i] = Py_NewRef(PyTuple_GetItem(args, i + 1));
@@ -94,6 +94,35 @@ struct Partial : public PyVarObject {
     }
 };
 
+static PyObject * repr(Partial *self) {
+
+    PyObject *result = PyObject_Repr(self->function.callable);
+
+    if (!result) return nullptr;
+
+    for (Py_ssize_t i = 0; i < Py_SIZE(self); ++i) {
+        PyObject *item_repr = PyUnicode_FromFormat(", %S", self->args[i]);
+
+        if (item_repr == NULL) {
+            Py_DECREF(result);
+            return NULL;
+        }
+        PyObject * new_result = PyUnicode_Concat(result, item_repr);
+        if (!new_result) {
+            Py_DECREF(result);
+            Py_DECREF(item_repr);
+            return NULL;
+        }
+        Py_DECREF(result);
+        Py_DECREF(item_repr);
+        result = new_result;
+    }
+    
+    PyObject *final_repr = PyUnicode_FromFormat(MODULE "partial(%S)", result);
+    Py_DECREF(result);
+    return final_repr;
+}
+
 PyTypeObject Partial_Type = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = MODULE "partial",
@@ -101,7 +130,9 @@ PyTypeObject Partial_Type = {
     .tp_itemsize = sizeof(PyObject *),
     .tp_dealloc = (destructor)Partial::dealloc,
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(Partial, vectorcall),
+    .tp_repr = (reprfunc)repr,
     .tp_call = PyVectorcall_Call,
+    .tp_str = (reprfunc)repr,
     .tp_getattro = (getattrofunc)Partial::getattro,
     .tp_flags = Py_TPFLAGS_DEFAULT | 
                 Py_TPFLAGS_HAVE_GC | 

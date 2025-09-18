@@ -22,6 +22,7 @@
 
 
 extern PyType_Spec Repeatedly_Spec;
+extern PyType_Spec DropArgs_Spec;
 
 extern PyTypeObject InstanceTest_Type;
 extern PyTypeObject CallAll_Type;
