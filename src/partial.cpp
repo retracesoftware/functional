@@ -7,6 +7,7 @@ struct Partial : public PyVarObject {
     retracesoftware::FastCall function;
     // PyObject * function;        
     // vectorcallfunc function_vectorcall;
+    int required;
     PyObject * args[];
 
     static int clear(Partial* self) {
@@ -41,31 +42,53 @@ struct Partial : public PyVarObject {
 
         size_t nargs = PyVectorcall_NARGS(nargsf) + (kwnames ? PyTuple_GET_SIZE(kwnames) : 0);
 
-        if (nargs == 0) {
+        if (nargs == 0 || self->required == 0) {
             return self->function(self->args, self->ob_size, nullptr);
         } else {
             size_t total_args = self->ob_size + nargs;
 
-            PyObject ** mem = (PyObject **)alloca(sizeof(PyObject *) * (total_args + 1)) + 1;
+            assert(self->required == -1);
 
-            for (size_t i = 0; i < (size_t)self->ob_size; i++) {
-                mem[i] = self->args[i];
+            if (self->required == -1 || self->required == total_args) { 
+                PyObject ** mem = (PyObject **)alloca(sizeof(PyObject *) * (total_args + 1)) + 1;
+
+                for (size_t i = 0; i < (size_t)self->ob_size; i++) {
+                    mem[i] = self->args[i];
+                }
+
+                for (size_t i = 0; i < nargs; i++) {
+                    mem[i + self->ob_size] = args[i];
+                }
+
+                nargsf = (self->ob_size + PyVectorcall_NARGS(nargsf)) | PY_VECTORCALL_ARGUMENTS_OFFSET;
+
+                return self->function(mem, nargsf, kwnames);
             }
-
-            for (size_t i = 0; i < nargs; i++) {
-                mem[i + self->ob_size] = args[i];
-            }
-
-            nargsf = (self->ob_size + PyVectorcall_NARGS(nargsf)) | PY_VECTORCALL_ARGUMENTS_OFFSET;
-
-            return self->function(mem, nargsf, kwnames);
         }
     }
 
     static PyObject* create(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+
         if (PyTuple_Size(args) == 0) {
             PyErr_SetString(PyExc_TypeError, "partial requires at least one positional argument");
             return nullptr;
+        }
+
+        int required = -1;
+
+        if (kwds) {
+            PyObject * obj = PyDict_GetItemString(kwds, "required");
+
+            if (obj) {
+                if (!PyLong_Check(obj)) {
+                    PyErr_Format(PyExc_TypeError, "required parameter: %S wasn't int", obj);
+                }
+                required = PyLong_AsLong(obj);
+
+                if (required < 0) {
+                    PyErr_Format(PyExc_TypeError, "required parameter: %S must be >= 0", obj);
+                }
+            }
         }
 
         // Use PyObject_NewVar to allocate memory for the object
@@ -85,6 +108,7 @@ struct Partial : public PyVarObject {
 
         self->vectorcall = (vectorcallfunc)Partial::call;
         self->dict = NULL;
+        self->required = required;
 
         return (PyObject*)self;
     }

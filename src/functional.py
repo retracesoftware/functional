@@ -14,6 +14,9 @@ def when_instanceof(cls, then):
 
 # TODO, compose is wrong order at the moment
 
+def lazy(func, *args):
+    return _functional.partial(func, *args, required = 0)
+
 def sequence(*args):
     if len(args) == 0:
         raise Exception()

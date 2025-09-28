@@ -50,7 +50,8 @@ py.extension_module(
     'src/constantly.cpp',
     'src/either.cpp',
     'src/compose2.cpp',
-    'src/dropargs.cpp'
+    'src/dropargs.cpp',
+    'src/vector.cpp'
     ],
   install: true,
   link_args: ['-g'],

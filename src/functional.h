@@ -59,6 +59,7 @@ extern PyTypeObject Spread_Type;
 extern PyTypeObject Constantly_Type;
 extern PyTypeObject Either_Type;
 extern PyTypeObject Compose2_Type;
+extern PyTypeObject Vector_Type;
 
 // extern PyTypeObject When_Type;
 // extern PyTypeObject WhenNot_Type;

@@ -181,6 +181,7 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &Constantly_Type,
         &Either_Type,
         &Compose2_Type,
+        &Vector_Type,
         NULL
     };
     
