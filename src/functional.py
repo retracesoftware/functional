@@ -67,3 +67,5 @@ def recurive_wrap_function(transform, f):
 
 def recursive_wrap(pred, transform, f):
     return wrap(when(pred, partial(wrap, transform)), f)
+
+def first(x): return x[0]
