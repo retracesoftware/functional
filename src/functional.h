@@ -60,6 +60,9 @@ extern PyTypeObject Constantly_Type;
 extern PyTypeObject Either_Type;
 extern PyTypeObject Compose2_Type;
 extern PyTypeObject Vector_Type;
+extern PyTypeObject UseWith_Type;
+extern PyTypeObject DeepWrap_Type;
+extern PyTypeObject WhenNotNone_Type;
 
 // extern PyTypeObject When_Type;
 // extern PyTypeObject WhenNot_Type;

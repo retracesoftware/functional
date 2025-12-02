@@ -27,7 +27,6 @@ struct Partial : public PyVarObject {
     }
     
     static void dealloc(Partial *self) {
-
         PyObject_GC_UnTrack(self);          // Untrack from the GC
 
         clear(self);

@@ -15,6 +15,8 @@ static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObjec
     size_t nargs = PyVectorcall_NARGS(nargsf);
     int all = nargs + (kwnames ? PyTuple_Size(kwnames) : 0);
 
+    assert (nargs >= from);
+
     // PyObject * vla[all + 1];
     PyObject ** mem = (PyObject **)alloca(sizeof(PyObject *) * (all + 1)) + 1;
 
@@ -47,6 +49,8 @@ static PyObject * vectorcall0(TransformArgs * self, PyObject* const * args, size
 }
 
 static PyObject * vectorcall1(TransformArgs * self, PyObject* const * args, size_t nargsf, PyObject* kwnames) {
+    assert(PyVectorcall_NARGS(nargsf) > 0);
+    
     return vectorcall_from(1, self, args, nargsf, kwnames);
 }
 

@@ -5,6 +5,8 @@
 static PyObject * apply_impl(PyObject *self, PyObject *const *args, Py_ssize_t nargsf, PyObject *kwnames) {
     size_t nargs = PyVectorcall_NARGS(nargsf);
 
+    assert(nargs > 0);
+    
     PyObject * func = args[0];
 
     PyObject * result = PyObject_Vectorcall(func, args + 1, (nargs - 1) | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
@@ -182,6 +184,9 @@ PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
         &Either_Type,
         &Compose2_Type,
         &Vector_Type,
+        &UseWith_Type,
+        &DeepWrap_Type,
+        &WhenNotNone_Type,
         NULL
     };
     

@@ -51,7 +51,10 @@ py.extension_module(
     'src/either.cpp',
     'src/compose2.cpp',
     'src/dropargs.cpp',
-    'src/vector.cpp'
+    'src/vector.cpp',
+    'src/usewith.cpp',
+    'src/deepwrap.cpp',
+    'src/whennotnone.cpp'
     ],
   install: true,
   link_args: ['-g'],

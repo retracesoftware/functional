@@ -109,7 +109,7 @@ static PyObject * repr(Vector *self) {
 
 PyTypeObject Vector_Type = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = MODULE "vector",
+    .tp_name = MODULE "juxt",
     .tp_basicsize = sizeof(Vector),
     .tp_itemsize = sizeof(PyObject *),
     .tp_dealloc = (destructor)Vector::dealloc,
@@ -122,7 +122,7 @@ PyTypeObject Vector_Type = {
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR |
                 Py_TPFLAGS_BASETYPE,
-    .tp_doc = "TODO",
+    .tp_doc = "when called creates a tuple by applying the supplied sequence of functions against the arguments",
     .tp_traverse = (traverseproc)Vector::traverse,
     .tp_clear = (inquiry)Vector::clear,
     .tp_descr_get = Vector::descr_get,
