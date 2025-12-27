@@ -1,6 +1,5 @@
 name: Build Wheels (Trusted Publisher)
 
-
 on:
   workflow_dispatch:
   push:
@@ -14,7 +13,7 @@ jobs:
   call-shared-builder:
     # Syntax: {owner}/{repo}/.github/workflows/{filename}@{ref}
     # Use @main for latest, or a specific tag like @v1
-    uses: retracesoftware/.github/workflows/build_extension_wheel.yml@main
+    uses: retracesoftware/.github/.github/workflows/build_extension_wheel.yml@main
     with:
       package_name: "retracesoftware_functional"
     secrets: inherit  # This passes GITHUB_TOKEN and others to the shared workflow
