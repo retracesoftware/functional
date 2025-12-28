@@ -1,0 +1,6 @@
+# .github/workflows/ci.yml (inside the functional repo)
+on: [pull_request]
+
+jobs:
+  run-tests:
+    uses: retracesoftware/.github/.github/workflows/pytest.yml@main
