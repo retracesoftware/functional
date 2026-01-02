@@ -33,8 +33,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          
       - name: Bump and Push
         run: |
           # We use versioningit to tell bump-my-version exactly what the current state is
-          bump-my-version bump ${{ github.event.inputs.bump_type }} --current-version $(versioningit)
+          VERSION=$(versioningit)
+          bump-my-version bump ${{ github.event.inputs.bump_type }} --current-version $VERSION
           git push origin main --tags
