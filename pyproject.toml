@@ -26,28 +26,8 @@ requires-python = ">=3.11"
 dependencies = []
 
 
-# [tool.meson-python]
-# # This tells meson-python to look at git tags
-# version-tag-prefix = "functional-v"
-
-# [tool.meson-python]
-# # This tells meson-python to fetch the version from the tool
-# version-command = ["versioningit"]
-
-[tool.versioningit]
-default-version = "0.0.0"
-
-[tool.versioningit.vcs]
-method = "git"
-tag-prefix = "v"
-
-# # 3. Optional: Write the version to a Python file so your extension or package can access it
-# # Adjust the path below to where your source code actually lives
-# write = { file = "src/version.py" }
-
-# # The 'onbuild' section is the "glue" that helps backends like meson-python
-# # It ensures the version is properly calculated during the build phase.
-# onbuild = { method = "replace-version" }
+[tool.meson-python]
+# Version is sourced from VERSION.txt via meson.build
 
 [project.urls]
 Homepage = "https://github.com/retracesoftware/functional"
@@ -59,6 +39,5 @@ Documentation = "https://github.com/retracesoftware/functional"
 requires = [
     "meson>=1.2",
     "meson-python>=0.18.0",
-    "versioningit>=2.0",
 ]
 build-backend = "mesonpy"
