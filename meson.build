@@ -1,12 +1,12 @@
 # meson.build
-project('retracesoftware_functional',
-  'cpp', 
-  version: '0.1.0',
+# Define a custom option for version (overridable via -Dversion=...)
+
+project(
+  'retracesoftware_functional',
+  'cpp',
+  version: run_command('versioningit').stdout().strip(),
   default_options: ['cpp_std=c++20'])
   
-# project('retracesoftware_functional', 'c', default_options: ['c_std=c99'])
-# project('retracesoftware_functional', ['c', 'cpp'], default_options: ['c_std=c99', 'cpp_std=c++20'])
-
 # Bind to the interpreter Meson/meson-python wants us to use.
 py = import('python').find_installation()
 fs = import('fs')
