@@ -9,6 +9,3 @@ filename = "meson.build"
 # This regex targets the version line specifically
 search = "version: '{current_version}'"
 replace = "version: '{new_version}'"
-
-[[tool.bumpversion.files]]
-filename = "version.txt"
