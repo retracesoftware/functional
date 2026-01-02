@@ -1,0 +1,40 @@
+name: Manual Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'patch, minor, or major'
+        required: true
+        default: 'patch'
+        type: choice
+        options: [patch, minor, major]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install tools
+        run: pip install bump-my-version versioningit
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump and Push
+        run: |
+          # We use versioningit to tell bump-my-version exactly what the current state is
+          bump-my-version bump ${{ github.event.inputs.bump_type }} --current-version $(versioningit)
+          git push origin main --tags
