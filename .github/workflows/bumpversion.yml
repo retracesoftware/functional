@@ -1,0 +1,44 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump-type:
+        description: 'Part of the version to bump'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Important: allows the bot to push commits/tags
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all tags for the versioning logic
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install bump-my-version
+        run: pip install bump-my-version
+        
+      - name: Bump Version
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          bump-my-version bump ${{ github.event.inputs.bump-type }}
+          
+      - name: Push changes
+        if: success()
+        run: git push origin main --tags
