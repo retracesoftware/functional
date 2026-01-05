@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ steps.retrace-token.outputs.token }}
-          persist-credentials: false # Ensures git uses the token provided above
+          #persist-credentials: false # Ensures git uses the token provided above
           fetch-depth: 0
 
       - name: Set up Python
