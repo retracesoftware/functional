@@ -17,9 +17,9 @@ jobs:
   # 1. Run the Shared Build & Tag logic
   # Replace 'your-org/shared-repo' with your actual central repository path
   call-shared-builder:
-    uses: your-org/shared-repo/.github/workflows/shared-builder.yml@main
+    uses: retracesoftware/.github/.github/workflows/release.yml@main
     with:
-      package_name: "your-package-name"
+      package_name: "retracesoftware_functional"
       bump_type: ${{ github.event.inputs.bump-type }}
     secrets:
       RETRACE_APP_ID: ${{ secrets.RETRACE_APP_ID }}
