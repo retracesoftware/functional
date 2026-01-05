@@ -16,15 +16,23 @@ on:
 jobs:
   bump:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Important: allows the bot to push commits/tags
-    
     steps:
+      # 1. Generate the Retrace Bot Token
+      - name: Generate Retrace Bot Token
+        id: retrace-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.RETRACE_APP_ID }}
+          private-key: ${{ secrets.RETRACE_PRIVATE_KEY }}
+
+      # 2. Checkout with the App Token
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetches all tags for the versioning logic
-      
+          token: ${{ steps.retrace-token.outputs.token }}
+          persist-credentials: false # Ensures git uses the token provided above
+          fetch-depth: 0
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -33,12 +41,16 @@ jobs:
       - name: Install bump-my-version
         run: pip install bump-my-version
         
+      # 3. Bump using Bot Identity
       - name: Bump Version
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # Uses the bot identity for the commit
+          git config --global user.name "${{ steps.retrace-token.outputs.app-slug }}[bot]"
+          git config --global user.email "${{ steps.retrace-token.outputs.app-slug }}[bot]@users.noreply.github.com"
+          
           bump-my-version bump ${{ github.event.inputs.bump-type }}
           
+      # 4. Push as the App
       - name: Push changes
         if: success()
         run: git push origin main --tags
