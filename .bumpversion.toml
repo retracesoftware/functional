@@ -1,5 +1,9 @@
 [tool.bumpversion]
+<<<<<<< HEAD
 current_version = "0.3.6" # Match this to your actual current version
+=======
+current_version = "0.3.4" # Match this to your actual current version
+>>>>>>> 260fa93 (Bump version: 0.3.3 → 0.3.4)
 commit = true
 tag = true
 tag_name = "{new_version}"
