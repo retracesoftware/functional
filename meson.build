@@ -4,7 +4,7 @@
 project(
   'retracesoftware_functional',
   'cpp',
-  version: '0.3.5',
+  version: '0.3.6',
   #version: run_command('versioningit').stdout().strip(),
   default_options: ['cpp_std=c++20'])
   
