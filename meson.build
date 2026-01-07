@@ -63,8 +63,9 @@ py.extension_module(
     ],
   install: true,
   link_args: ['-g'],
-  
-  # If you want extra flags:
-  # cpp_args: ['-O3', '-fvisibility=hidden'],
+  # Hide all symbols by default, only export what's explicitly marked
+  # GCC/Clang: -fvisibility=hidden makes all symbols hidden by default
+  # PyMODINIT_FUNC already has visibility("default") so init function is exported
+  cpp_args: host_machine.system() == 'windows' ? [] : ['-fvisibility=hidden'],
   include_directories: include_directories('common-headers/include'),
 )

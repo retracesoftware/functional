@@ -17,6 +17,19 @@
 
 #define MODULE "retracesoftware.functional."
 
+// Visibility macros for symbol export control
+// With -fvisibility=hidden, only EXPORT_SYMBOL makes symbols visible
+#if defined(__GNUC__) || defined(__clang__)
+    #define EXPORT_SYMBOL __attribute__((visibility("default")))
+    #define HIDDEN_SYMBOL __attribute__((visibility("hidden")))
+#elif defined(_MSC_VER)
+    #define EXPORT_SYMBOL __declspec(dllexport)
+    #define HIDDEN_SYMBOL
+#else
+    #define EXPORT_SYMBOL
+    #define HIDDEN_SYMBOL
+#endif
+
 #define OFFSET_OF_MEMBER(type, member) \
     ((Py_ssize_t) &reinterpret_cast<const volatile char&>((((type*)0)->member)))
 
