@@ -161,7 +161,18 @@ PyTypeObject UseWith_Type = {
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR |
                 Py_TPFLAGS_BASETYPE,
-    .tp_doc = "when called creates a tuple by applying the supplied sequence of functions against the arguments",
+    .tp_doc = "use_with(target, *transforms)\n--\n\n"
+               "Apply transforms to args, then pass transformed args to target.\n\n"
+               "Each transform is called with all original args; the results\n"
+               "become the arguments to target.\n\n"
+               "Args:\n"
+               "    target: The function to call with transformed arguments.\n"
+               "    *transforms: Functions to compute each argument for target.\n\n"
+               "Returns:\n"
+               "    A callable: use_with(f, t1, t2)(x) == f(t1(x), t2(x))\n\n"
+               "Example:\n"
+               "    >>> add_len_and_sum = use_with(lambda a,b: a+b, len, sum)\n"
+               "    >>> add_len_and_sum([1, 2, 3])  # 3 + 6 = 9",
     .tp_traverse = (traverseproc)UseWith::traverse,
     .tp_clear = (inquiry)UseWith::clear,
     .tp_descr_get = UseWith::descr_get,

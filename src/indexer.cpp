@@ -63,7 +63,17 @@ PyTypeObject Indexer_Type = {
     .tp_call = PyVectorcall_Call,
     // .tp_str = (reprfunc)Gateway::tp_str,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "indexed(index)\n--\n\n"
+               "Create a callable that extracts element at index from a sequence.\n\n"
+               "Works with tuples and lists using fast unchecked access.\n\n"
+               "Args:\n"
+               "    index: The integer index to extract.\n\n"
+               "Returns:\n"
+               "    A callable that returns seq[index].\n\n"
+               "Example:\n"
+               "    >>> get_first = indexed(0)\n"
+               "    >>> get_first([1, 2, 3])  # returns 1\n"
+               "    >>> get_first(('a', 'b'))  # returns 'a'",
     // .tp_traverse = (traverseproc)Demultiplexer::traverse,
     // .tp_clear = (inquiry)Demultiplexer::clear,
     // .tp_methods = methods,

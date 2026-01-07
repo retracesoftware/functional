@@ -70,8 +70,8 @@ static int init(MethodInvoker *self, PyObject *args, PyObject *kwds) {
 }
 
 static PyMemberDef members[] = {
-    {"method_name", T_OBJECT, offsetof(MethodInvoker, methodname), READONLY, "TODO"},
-    {"obj", T_OBJECT, offsetof(MethodInvoker, obj), READONLY, "TODO"},
+    {"method_name", T_OBJECT, offsetof(MethodInvoker, methodname), READONLY, "The method name to look up on the object."},
+    {"obj", T_OBJECT, offsetof(MethodInvoker, obj), READONLY, "The object on which to invoke the method."},
     {NULL}  /* Sentinel */
 };
 
@@ -86,7 +86,16 @@ PyTypeObject MethodInvoker_Type = {
     .tp_call = PyVectorcall_Call,
     .tp_str = (reprfunc)repr,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "method_invoker(obj, method_name, lookup_error=None)\n--\n\n"
+               "Create a callable that invokes a method on a fixed object.\n\n"
+               "Looks up method_name on obj and calls it with provided arguments.\n"
+               "If lookup fails and lookup_error is set, raises that instead.\n\n"
+               "Args:\n"
+               "    obj: The object on which to invoke the method.\n"
+               "    method_name: String name of the method to call.\n"
+               "    lookup_error: Exception to raise if method not found.\n\n"
+               "Returns:\n"
+               "    A callable: invoker(*args) == obj.method_name(*args)",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

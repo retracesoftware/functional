@@ -126,7 +126,19 @@ PyTypeObject Spread_Type = {
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR |
                 Py_TPFLAGS_BASETYPE,
-    .tp_doc = "TODO",
+    .tp_doc = "spread(function, *transforms)\n--\n\n"
+               "Apply transforms to a single arg, then spread results to function.\n\n"
+               "Takes one argument, applies each transform to it, then calls\n"
+               "function with the transformed values as separate arguments.\n"
+               "Use None in transforms to pass the original value unchanged.\n\n"
+               "Args:\n"
+               "    function: Callable to receive the spread arguments.\n"
+               "    *transforms: Callables to apply (or None for identity).\n\n"
+               "Returns:\n"
+               "    A callable: spread(f, t1, t2)(x) == f(t1(x), t2(x))\n\n"
+               "Example:\n"
+               "    >>> minmax = spread(lambda a,b: (a,b), min, max)\n"
+               "    >>> minmax([3, 1, 2])  # returns (1, 3)",
     .tp_traverse = (traverseproc)Spread::traverse,
     .tp_clear = (inquiry)Spread::clear,
     .tp_descr_get = Spread::descr_get,

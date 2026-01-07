@@ -68,9 +68,9 @@ struct TernaryPredicate : PyObject {
 };
 
 static PyMemberDef members[] = {
-    {"condition", T_OBJECT, OFFSET_OF_MEMBER(TernaryPredicate, condition), READONLY, "TODO"},
-    {"on_true", T_OBJECT, OFFSET_OF_MEMBER(TernaryPredicate, on_true), READONLY, "TODO"},
-    {"on_false", T_OBJECT, OFFSET_OF_MEMBER(TernaryPredicate, on_false), READONLY, "TODO"},
+    {"condition", T_OBJECT, OFFSET_OF_MEMBER(TernaryPredicate, condition), READONLY, "The predicate that determines which branch to take."},
+    {"on_true", T_OBJECT, OFFSET_OF_MEMBER(TernaryPredicate, on_true), READONLY, "Function called when condition is truthy."},
+    {"on_false", T_OBJECT, OFFSET_OF_MEMBER(TernaryPredicate, on_false), READONLY, "Function called when condition is falsy."},
     {NULL}  /* Sentinel */
 };
 
@@ -83,7 +83,16 @@ PyTypeObject TernaryPredicate_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(TernaryPredicate, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "ternary_predicate(condition, on_true, on_false)\n--\n\n"
+               "Ternary conditional: condition ? on_true : on_false.\n\n"
+               "Evaluates condition(*args); if truthy calls on_true(*args),\n"
+               "otherwise calls on_false(*args).\n\n"
+               "Args:\n"
+               "    condition: Predicate to evaluate.\n"
+               "    on_true: Called when condition is truthy.\n"
+               "    on_false: Called when condition is falsy.\n\n"
+               "Returns:\n"
+               "    Result of on_true or on_false depending on condition.",
     .tp_traverse = (traverseproc)TernaryPredicate::traverse,
     .tp_clear = (inquiry)TernaryPredicate::clear,
     // .tp_methods = methods,

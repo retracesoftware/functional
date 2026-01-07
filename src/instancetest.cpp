@@ -68,7 +68,11 @@ PyTypeObject InstanceTest_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(InstanceTest, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "InstanceTest\n--\n\n"
+               "Fast isinstance-style predicates with cached type checks.\n\n"
+               "Internal type backing isinstanceof(), instance_test(), and\n"
+               "notinstance_test() functions. Provides optimized type checking\n"
+               "using direct PyObject_TypeCheck calls.",
     .tp_traverse = (traverseproc)InstanceTest::traverse,
     .tp_clear = (inquiry)InstanceTest::clear,
 

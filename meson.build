@@ -4,10 +4,10 @@
 project(
   'retracesoftware_functional',
   'cpp',
-  version: '0.3.3',
+  version: '0.3.2',
   #version: run_command('versioningit').stdout().strip(),
   default_options: ['cpp_std=c++20'])
-  
+
 # Bind to the interpreter Meson/meson-python wants us to use.
 py = import('python').find_installation()
 fs = import('fs')

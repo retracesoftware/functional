@@ -123,7 +123,18 @@ PyTypeObject IfThenElse_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(IfThenElse, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "if_then_else(test, then, otherwise, from_arg=0)\n--\n\n"
+               "Conditional dispatch with optional argument slicing.\n\n"
+               "Tests condition on args[from_arg:]; if truthy calls 'then',\n"
+               "if falsy calls 'otherwise'. If then/otherwise is None, returns\n"
+               "the first argument (or None if no args).\n\n"
+               "Args:\n"
+               "    test: Predicate callable.\n"
+               "    then: Called when test is truthy (or None to return first arg).\n"
+               "    otherwise: Called when test is falsy (or None to return first arg).\n"
+               "    from_arg: Start index for args passed to test (default 0).\n\n"
+               "Returns:\n"
+               "    Result of then/otherwise, or first arg if branch is None.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

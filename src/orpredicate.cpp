@@ -98,7 +98,18 @@ PyTypeObject OrPredicate_Type = {
     .tp_vectorcall_offset = ManyPredicate_Type.tp_vectorcall_offset,
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "or_predicate(*predicates)\n--\n\n"
+               "Combine predicates with logical OR (short-circuit evaluation).\n\n"
+               "Returns True if any predicate returns a truthy value.\n"
+               "Short-circuits on the first truthy result.\n\n"
+               "Args:\n"
+               "    *predicates: Callable predicates to combine.\n\n"
+               "Returns:\n"
+               "    A predicate that returns True if any predicate is truthy.\n\n"
+               "Example:\n"
+               "    >>> is_special = or_predicate(is_zero, is_negative)\n"
+               "    >>> is_special(0)   # True (short-circuits)\n"
+               "    >>> is_special(5)   # False",
     .tp_traverse = ManyPredicate_Type.tp_traverse,
     .tp_clear = ManyPredicate_Type.tp_clear,
     .tp_base = &ManyPredicate_Type,

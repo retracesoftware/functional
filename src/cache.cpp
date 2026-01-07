@@ -122,7 +122,14 @@ PyTypeObject Cache_Type = {
     .tp_vectorcall_offset = offsetof(Cache, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = "Returns id, None if no id found",
+    .tp_doc = "Cache(lookup)\n--\n\n"
+               "A simple identity-based cache with a lookup fallback.\n\n"
+               "On cache miss, calls the lookup function. If lookup returns None,\n"
+               "the result is not cached. Uses a high-performance C++ hash map.\n\n"
+               "Args:\n"
+               "    lookup: A callable(obj) that returns the value to cache, or None.\n\n"
+               "Returns:\n"
+               "    A callable that caches and returns lookup results.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     .tp_methods = methods,

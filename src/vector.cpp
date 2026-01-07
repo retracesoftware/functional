@@ -122,7 +122,17 @@ PyTypeObject Vector_Type = {
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR |
                 Py_TPFLAGS_BASETYPE,
-    .tp_doc = "when called creates a tuple by applying the supplied sequence of functions against the arguments",
+    .tp_doc = "juxt(*functions)\n--\n\n"
+               "Juxtapose functions: call each with the same args, return tuple of results.\n\n"
+               "Inspired by Clojure's juxt. Useful for computing multiple values\n"
+               "from the same input in parallel.\n\n"
+               "Args:\n"
+               "    *functions: Callables to apply to the arguments.\n\n"
+               "Returns:\n"
+               "    A callable: juxt(f, g, h)(x) == (f(x), g(x), h(x))\n\n"
+               "Example:\n"
+               "    >>> stats = juxt(min, max, sum)\n"
+               "    >>> stats([1, 2, 3])  # (1, 3, 6)",
     .tp_traverse = (traverseproc)Vector::traverse,
     .tp_clear = (inquiry)Vector::clear,
     .tp_descr_get = Vector::descr_get,

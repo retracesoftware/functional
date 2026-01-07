@@ -22,7 +22,7 @@ static void dealloc(ManyPredicate *self) {
 }
 
 static PyMemberDef members[] = {
-    {"elements", T_OBJECT, OFFSET_OF_MEMBER(ManyPredicate, elements), READONLY, "TODO"},
+    {"elements", T_OBJECT, OFFSET_OF_MEMBER(ManyPredicate, elements), READONLY, "The tuple of predicates combined in this compound predicate."},
     {NULL}  /* Sentinel */
 };
 
@@ -107,7 +107,10 @@ PyTypeObject ManyPredicate_Type = {
     .tp_call = PyVectorcall_Call,
     .tp_str = (reprfunc)tp_str,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_BASETYPE,
-    .tp_doc = "TODO",
+    .tp_doc = "many_predicate\n--\n\n"
+               "Base class for compound predicates (and_predicate, or_predicate).\n\n"
+               "Stores a tuple of predicates and provides common functionality\n"
+               "like hashing, equality, subscript access, and iteration.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     .tp_richcompare = richcompare,

@@ -123,7 +123,19 @@ PyTypeObject Compose2_Type = {
                 Py_TPFLAGS_HAVE_GC | 
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR,
-    .tp_doc = "TODO",
+    .tp_doc = "compose(f, g)\n--\n\n"
+               "Compose two functions: compose(f, g)(x) == f(g(x)).\n\n"
+               "An optimized two-function composition using cached vectorcall.\n"
+               "Attribute access is also composed: getattr(compose(f, g), 'x') == f(g.x).\n\n"
+               "Args:\n"
+               "    f: The outer function to apply to g's result.\n"
+               "    g: The inner function to call with the arguments.\n\n"
+               "Returns:\n"
+               "    A callable where calling it applies g then f to the result.\n\n"
+               "Example:\n"
+               "    >>> c = compose(str.upper, str.strip)\n"
+               "    >>> c('  hello  ')\n"
+               "    'HELLO'",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

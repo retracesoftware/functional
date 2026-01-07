@@ -29,12 +29,12 @@ static void dealloc(Repeatedly *self) {
 }
 
 static PyMemberDef members[] = {
-    {"function", T_OBJECT, OFFSET_OF_MEMBER(Repeatedly, f), READONLY, "TODO"},
+    {"function", T_OBJECT, OFFSET_OF_MEMBER(Repeatedly, f), READONLY, "The wrapped function called on each invocation."},
     {"__vectorcalloffset__", 
         T_PYSSIZET,
         OFFSET_OF_MEMBER(Repeatedly, vectorcall),
         READONLY,
-        "TODO"},
+        "Offset of vectorcall function pointer."},
     {NULL}  /* Sentinel */
 };
 
@@ -87,7 +87,14 @@ static PyObject* descr_get(PyObject *self, PyObject *obj, PyObject *type) {
 static PyType_Slot slots[] = {
     {Py_tp_dealloc, (void*)dealloc},
     {Py_tp_call, (void*)PyVectorcall_Call},
-    {Py_tp_doc, (void*)"TODO"},
+    {Py_tp_doc, (void*)"repeatedly(function)\n--\n\n"
+               "Wrap a no-arg function to be called repeatedly, ignoring arguments.\n\n"
+               "Each call invokes function() regardless of arguments passed.\n"
+               "Useful for generators or stateful computations.\n\n"
+               "Args:\n"
+               "    function: A callable that takes no arguments.\n\n"
+               "Returns:\n"
+               "    A callable that always calls function()."},
     {Py_tp_traverse, (void*)traverse},
     {Py_tp_clear, (void*)clear},
     {Py_tp_members, (void*)members},

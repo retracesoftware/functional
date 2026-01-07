@@ -123,7 +123,16 @@ PyTypeObject DeepWrap_Type = {
                 Py_TPFLAGS_HAVE_GC | 
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR,
-    .tp_doc = "TODO",
+    .tp_doc = "deepwrap(wrapper, target)\n--\n\n"
+               "Recursively wrap callable results with a transformer.\n\n"
+               "Calls target, applies wrapper to the result. If the result is\n"
+               "callable, returns a new deepwrap that will continue wrapping.\n"
+               "Useful for wrapping APIs that return more callables.\n\n"
+               "Args:\n"
+               "    wrapper: Transform to apply to each result.\n"
+               "    target: The initial callable to wrap.\n\n"
+               "Returns:\n"
+               "    A callable that wraps results recursively.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

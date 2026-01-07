@@ -221,7 +221,18 @@ PyTypeObject Walker_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(Walker, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "walker(function)\n--\n\n"
+               "Recursively walk and transform nested data structures.\n\n"
+               "Traverses tuples, lists, and dicts, applying function to\n"
+               "leaf values (non-container types). Preserves structure and\n"
+               "uses copy-on-write for efficiency.\n\n"
+               "Args:\n"
+               "    function: Transform to apply to leaf values.\n\n"
+               "Returns:\n"
+               "    A callable that walks and transforms nested structures.\n\n"
+               "Example:\n"
+               "    >>> double = walker(lambda x: x * 2 if isinstance(x, int) else x)\n"
+               "    >>> double({'a': [1, 2], 'b': 3})  # {'a': [2, 4], 'b': 6}",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

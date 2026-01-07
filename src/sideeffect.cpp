@@ -70,7 +70,18 @@ PyTypeObject SideEffect_Type = {
     .tp_vectorcall_offset = offsetof(SideEffect, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "side_effect(function)\n--\n\n"
+               "Execute a function for its side effect, returning the input unchanged.\n\n"
+               "Calls function(arg), discards the result, and returns arg.\n"
+               "Useful in pipelines where you want to log/observe without\n"
+               "modifying the data flow.\n\n"
+               "Args:\n"
+               "    function: A callable to execute for side effects.\n\n"
+               "Returns:\n"
+               "    A callable that passes through its input after calling function.\n\n"
+               "Example:\n"
+               "    >>> pipeline = compose(transform, side_effect(print), validate)\n"
+               "    >>> pipeline(data)  # prints intermediate value, returns validated",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

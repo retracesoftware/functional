@@ -85,7 +85,18 @@ PyTypeObject SelfApply_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(SelfApply, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "selfapply(target)\n--\n\n"
+               "Call target, then call its result with the same arguments.\n\n"
+               "Equivalent to: lambda *args: target(*args)(*args)\n"
+               "Useful for factory patterns where the factory returns a processor.\n\n"
+               "Args:\n"
+               "    target: A callable that returns another callable.\n\n"
+               "Returns:\n"
+               "    A callable that applies the result of target to the same args.\n\n"
+               "Example:\n"
+               "    >>> def pick_handler(x): return handler_for(type(x))\n"
+               "    >>> process = selfapply(pick_handler)\n"
+               "    >>> process(data)  # picks handler, then applies it to data",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

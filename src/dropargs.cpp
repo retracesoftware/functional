@@ -35,12 +35,12 @@ static void dealloc(DropArgs *self) {
 }
 
 static PyMemberDef members[] = {
-    {"function", T_OBJECT, OFFSET_OF_MEMBER(DropArgs, f), READONLY, "TODO"},
+    {"function", T_OBJECT, OFFSET_OF_MEMBER(DropArgs, f), READONLY, "The wrapped function to call after dropping args."},
     {"__vectorcalloffset__", 
         T_PYSSIZET,
         OFFSET_OF_MEMBER(DropArgs, vectorcall),
         READONLY,
-        "TODO"},
+        "Offset of vectorcall function pointer."},
     {NULL}  /* Sentinel */
 };
 
@@ -70,7 +70,14 @@ static PyObject* descr_get(PyObject *self, PyObject *obj, PyObject *type) {
 static PyType_Slot slots[] = {
     {Py_tp_dealloc, (void*)dealloc},
     {Py_tp_call, (void*)PyVectorcall_Call},
-    {Py_tp_doc, (void*)"TODO"},
+    {Py_tp_doc, (void*)"dropargs(function, to_drop=1)\n--\n\n"
+               "Drop the first N positional arguments before calling function.\n\n"
+               "Useful for adapting callbacks that receive extra context args.\n\n"
+               "Args:\n"
+               "    function: The target callable.\n"
+               "    to_drop: Number of leading positional args to drop (default 1).\n\n"
+               "Returns:\n"
+               "    A callable: dropargs(f, 2)(a, b, c) == f(c)"},
     {Py_tp_traverse, (void*)traverse},
     {Py_tp_clear, (void*)clear},
     {Py_tp_members, (void*)members},

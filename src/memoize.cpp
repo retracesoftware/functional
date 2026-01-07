@@ -103,7 +103,7 @@ static void dealloc(Memoize *self) {
 }
 
 static PyMemberDef members[] = {
-    {"target", T_OBJECT, offsetof(Memoize, target), READONLY, "TODO"},
+    {"target", T_OBJECT, offsetof(Memoize, target), READONLY, "The wrapped function being memoized."},
     {NULL}  /* Sentinel */
 };
 
@@ -126,7 +126,7 @@ static PyObject * create(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
     new (self) Memoize(target);
 
-    static PyMethodDef def = { "weakref_callback", (PyCFunction)weakref_callback, METH_O, "TODO" };
+    static PyMethodDef def = { "weakref_callback", (PyCFunction)weakref_callback, METH_O, "Internal callback to evict cache entries when keys are garbage collected." };
 
     self->callback = PyCFunction_New(&def, (PyObject *)self);
 
@@ -144,7 +144,21 @@ PyTypeObject Memoize_Type = {
     .tp_vectorcall_offset = offsetof(Memoize, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "memoize_one_arg(target)\n--\n\n"
+               "Memoize a single-argument function using object identity.\n\n"
+               "Uses a high-performance C++ hash map (unordered_dense) for O(1) lookups.\n"
+               "Automatically evicts cached entries when keys are garbage collected\n"
+               "via weak references.\n\n"
+               "Args:\n"
+               "    target: A callable that takes exactly one argument.\n\n"
+               "Returns:\n"
+               "    A memoized version of the function.\n\n"
+               "Example:\n"
+               "    >>> @memoize_one_arg\n"
+               "    ... def expensive(obj):\n"
+               "    ...     return compute(obj)\n"
+               "    >>> expensive(x)  # computed\n"
+               "    >>> expensive(x)  # cached",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

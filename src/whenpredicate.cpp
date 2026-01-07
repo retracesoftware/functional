@@ -51,8 +51,8 @@ static void dealloc(WhenPredicate *self) {
 }
 
 static PyMemberDef members[] = {
-    {"predicate", T_OBJECT, offsetof(WhenPredicate, predicate), READONLY, "TODO"},
-    {"function", T_OBJECT, offsetof(WhenPredicate, function), READONLY, "TODO"},
+    {"predicate", T_OBJECT, offsetof(WhenPredicate, predicate), READONLY, "The predicate to test."},
+    {"function", T_OBJECT, offsetof(WhenPredicate, function), READONLY, "The function to call when predicate is truthy."},
     {NULL}  /* Sentinel */
 };
 
@@ -90,7 +90,15 @@ PyTypeObject WhenPredicate_Type = {
     .tp_vectorcall_offset = offsetof(WhenPredicate, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "when_predicate(predicate, function)\n--\n\n"
+               "Conditional function application: call function only if predicate is truthy.\n\n"
+               "If predicate(*args) is truthy, returns function(*args).\n"
+               "Otherwise returns None.\n\n"
+               "Args:\n"
+               "    predicate: A callable that tests the condition.\n"
+               "    function: A callable to invoke when predicate passes.\n\n"
+               "Returns:\n"
+               "    function(*args) if predicate is truthy, else None.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

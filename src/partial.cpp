@@ -162,7 +162,22 @@ PyTypeObject Partial_Type = {
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR |
                 Py_TPFLAGS_BASETYPE,
-    .tp_doc = "TODO",
+    .tp_doc = "partial(func, *args, required=None)\n--\n\n"
+               "Create a partial application of a function with fixed arguments.\n\n"
+               "Similar to functools.partial but optimized with vectorcall and\n"
+               "stack-based argument concatenation for minimal overhead.\n\n"
+               "Args:\n"
+               "    func: The callable to partially apply.\n"
+               "    *args: Positional arguments to prepend on each call.\n"
+               "    required: If set to 0, call immediately with stored args only.\n"
+               "              If -1 (default), concatenate additional args on call.\n\n"
+               "Returns:\n"
+               "    A callable that prepends the stored args to any new arguments.\n\n"
+               "Example:\n"
+               "    >>> add = lambda a, b: a + b\n"
+               "    >>> add5 = partial(add, 5)\n"
+               "    >>> add5(3)\n"
+               "    8",
     .tp_traverse = (traverseproc)Partial::traverse,
     .tp_clear = (inquiry)Partial::clear,
     .tp_descr_get = Partial::descr_get,

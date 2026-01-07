@@ -71,7 +71,19 @@ PyTypeObject Always_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(Always, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "always(target)\n--\n\n"
+               "Create a callable that always returns target (or calls it if callable).\n\n"
+               "If target is callable, it's called with no arguments each time.\n"
+               "Otherwise, target is returned directly. Ignores all arguments.\n\n"
+               "Args:\n"
+               "    target: Value to return, or callable to invoke.\n\n"
+               "Returns:\n"
+               "    A callable that ignores its arguments and returns target.\n\n"
+               "Example:\n"
+               "    >>> f = always(42)\n"
+               "    >>> f('ignored', 'args')  # 42\n"
+               "    >>> g = always(random.random)\n"
+               "    >>> g()  # new random value each call",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,
