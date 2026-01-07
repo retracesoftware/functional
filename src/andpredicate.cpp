@@ -91,7 +91,18 @@ PyTypeObject AndPredicate_Type = {
     .tp_vectorcall_offset = ManyPredicate_Type.tp_vectorcall_offset,
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "and_predicate(*predicates)\n--\n\n"
+               "Combine predicates with logical AND (short-circuit evaluation).\n\n"
+               "Returns True only if all predicates return truthy values.\n"
+               "Short-circuits on the first falsy result.\n\n"
+               "Args:\n"
+               "    *predicates: Callable predicates to combine.\n\n"
+               "Returns:\n"
+               "    A predicate that returns True iff all predicates are truthy.\n\n"
+               "Example:\n"
+               "    >>> is_valid = and_predicate(is_positive, is_even)\n"
+               "    >>> is_valid(4)   # True\n"
+               "    >>> is_valid(-2)  # False (short-circuits at is_positive)",
     .tp_traverse = ManyPredicate_Type.tp_traverse,
     .tp_clear = ManyPredicate_Type.tp_clear,
     .tp_base = &ManyPredicate_Type,

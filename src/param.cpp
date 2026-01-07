@@ -66,8 +66,8 @@ struct Param : public PyObject {
 };
 
 static PyMemberDef members[] = {
-    {"name", T_OBJECT, OFFSET_OF_MEMBER(Param, name), READONLY, "TODO"},
-    {"index", T_INT, OFFSET_OF_MEMBER(Param, index), READONLY, "TODO"},
+    {"name", T_OBJECT, OFFSET_OF_MEMBER(Param, name), READONLY, "The parameter name to look up in kwargs."},
+    {"index", T_INT, OFFSET_OF_MEMBER(Param, index), READONLY, "The positional index to use if name not in kwargs."},
     {NULL}  /* Sentinel */
 };
 
@@ -83,7 +83,19 @@ PyTypeObject Param_Type = {
     .tp_str = (reprfunc)Param::repr,
 
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "param(name, index)\n--\n\n"
+               "Extract a named or positional parameter from arguments.\n\n"
+               "First checks kwargs for 'name', then falls back to args[index].\n"
+               "Raises ValueError if the parameter is not found.\n\n"
+               "Args:\n"
+               "    name: String name to look up in keyword arguments.\n"
+               "    index: Positional index to use as fallback.\n\n"
+               "Returns:\n"
+               "    A callable that extracts the parameter value.\n\n"
+               "Example:\n"
+               "    >>> get_x = param('x', 0)\n"
+               "    >>> get_x(1, 2, 3)    # returns 1 (args[0])\n"
+               "    >>> get_x(x=42)       # returns 42 (kwargs['x'])",
     // .tp_traverse = (traverseproc)traverse,
     // .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

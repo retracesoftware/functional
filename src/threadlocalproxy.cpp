@@ -145,7 +145,16 @@ PyTypeObject ThreadLocalProxy_Type = {
     .tp_getattro = (getattrofunc)ThreadLocalProxy::getattro,
     .tp_setattro = (setattrofunc)ThreadLocalProxy::setattro,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "ThreadLocalProxy(error=None)\n--\n\n"
+               "A proxy object that delegates to a thread-local target.\n\n"
+               "Each thread can have a different target object. Attribute access,\n"
+               "calls, and iteration are forwarded to the current thread's target.\n"
+               "Use ThreadLocalProxy.set(proxy, target) to set the target.\n\n"
+               "Args:\n"
+               "    error: Exception to raise when accessed without a target set.\n\n"
+               "Class Methods:\n"
+               "    set(proxy, target): Set this thread's target (returns previous).\n"
+               "    get(proxy): Get this thread's target (or None).",
     .tp_iter = (getiterfunc)ThreadLocalProxy::iter,
     .tp_iternext = (iternextfunc)ThreadLocalProxy::iternext,
     // .tp_methods = methods,

@@ -73,10 +73,10 @@ static void dealloc(Advice *self) {
 }
 
 static PyMemberDef members[] = {
-    {"function", T_OBJECT, offsetof(Advice, func), READONLY, "TODO"},
-    {"on_call", T_OBJECT, offsetof(Advice, on_call), 0, "TODO"},
-    {"on_result", T_OBJECT, offsetof(Advice, on_result), 0, "TODO"},
-    {"on_error", T_OBJECT, offsetof(Advice, on_error), 0, "TODO"},
+    {"function", T_OBJECT, offsetof(Advice, func), READONLY, "The wrapped function being advised."},
+    {"on_call", T_OBJECT, offsetof(Advice, on_call), 0, "Callback invoked before the function with the same args."},
+    {"on_result", T_OBJECT, offsetof(Advice, on_result), 0, "Callback invoked after success with the result."},
+    {"on_error", T_OBJECT, offsetof(Advice, on_error), 0, "Callback invoked on exception with (type, value, traceback)."},
     {NULL}  /* Sentinel */
 };
 
@@ -123,7 +123,17 @@ PyTypeObject Advice_Type = {
     .tp_vectorcall_offset = offsetof(Advice, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "advice(function, on_call=None, on_result=None, on_error=None)\n--\n\n"
+               "Wrap a function with before/after/error hooks (AOP-style advice).\n\n"
+               "Hooks are called for side effects; the wrapped function's result\n"
+               "is returned. Exceptions propagate after on_error is called.\n\n"
+               "Args:\n"
+               "    function: The callable to wrap.\n"
+               "    on_call: Called before function with the same arguments.\n"
+               "    on_result: Called after success with the result value.\n"
+               "    on_error: Called on exception with (exc_type, exc_value, exc_tb).\n\n"
+               "Returns:\n"
+               "    A wrapped callable that invokes hooks around the function.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

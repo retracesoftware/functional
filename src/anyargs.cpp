@@ -67,7 +67,16 @@ PyTypeObject AnyArgs_Type = {
     .tp_vectorcall_offset = offsetof(AnyArgs, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "anyargs(function)\n--\n\n"
+               "Wrap a no-argument function to accept (and ignore) any arguments.\n\n"
+               "The wrapped function is always called with no arguments.\n\n"
+               "Args:\n"
+               "    function: A callable that takes no arguments.\n\n"
+               "Returns:\n"
+               "    A callable that ignores all arguments and calls function().\n\n"
+               "Example:\n"
+               "    >>> get_time = anyargs(time.time)\n"
+               "    >>> get_time('ignored', x=1)  # same as time.time()",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

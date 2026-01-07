@@ -35,7 +35,7 @@ static PyObject * repr(Constantly *self) {
 }
 
 static PyMemberDef members[] = {
-    {"value", T_OBJECT, offsetof(Constantly, result), READONLY, "TODO"},
+    {"value", T_OBJECT, offsetof(Constantly, result), READONLY, "The constant value returned on every call."},
     {NULL}  /* Sentinel */
 };
 
@@ -63,7 +63,18 @@ PyTypeObject Constantly_Type = {
     .tp_call = PyVectorcall_Call,
     .tp_str = (reprfunc)repr,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "constantly(value)\n--\n\n"
+               "Create a callable that always returns the same value.\n\n"
+               "Ignores all arguments and returns value unchanged.\n"
+               "Unlike always(), does not call value even if it's callable.\n\n"
+               "Args:\n"
+               "    value: The constant value to return.\n\n"
+               "Returns:\n"
+               "    A callable that always returns value.\n\n"
+               "Example:\n"
+               "    >>> f = constantly(42)\n"
+               "    >>> f()           # 42\n"
+               "    >>> f(1, 2, x=3)  # 42",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

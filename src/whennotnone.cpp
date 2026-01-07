@@ -96,7 +96,18 @@ PyTypeObject WhenNotNone_Type = {
                 Py_TPFLAGS_HAVE_GC | 
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR,
-    .tp_doc = "TODO",
+    .tp_doc = "when_not_none(target)\n--\n\n"
+               "Call target only if all arguments are not None.\n\n"
+               "If any positional or keyword argument is None, returns None\n"
+               "immediately without calling target.\n\n"
+               "Args:\n"
+               "    target: The callable to wrap.\n\n"
+               "Returns:\n"
+               "    A callable that short-circuits on None arguments.\n\n"
+               "Example:\n"
+               "    >>> safe_add = when_not_none(lambda a, b: a + b)\n"
+               "    >>> safe_add(1, 2)     # 3\n"
+               "    >>> safe_add(1, None)  # None",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

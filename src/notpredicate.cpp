@@ -44,7 +44,7 @@ static void dealloc(NotPredicate *self) {
 }
 
 static PyMemberDef members[] = {
-    {"pred", T_OBJECT, offsetof(NotPredicate, pred), READONLY, "TODO"},
+    {"pred", T_OBJECT, offsetof(NotPredicate, pred), READONLY, "The wrapped predicate being negated."},
     {NULL}  /* Sentinel */
 };
 
@@ -86,7 +86,16 @@ PyTypeObject NotPredicate_Type = {
     .tp_call = PyVectorcall_Call,
     .tp_str = (reprfunc)tp_str,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "not_predicate(pred)\n--\n\n"
+               "Negate a predicate: returns True when pred returns falsy, and vice versa.\n\n"
+               "Args:\n"
+               "    pred: A callable predicate to negate.\n\n"
+               "Returns:\n"
+               "    A predicate that returns the logical NOT of pred's result.\n\n"
+               "Example:\n"
+               "    >>> is_not_none = not_predicate(lambda x: x is None)\n"
+               "    >>> is_not_none(42)    # True\n"
+               "    >>> is_not_none(None)  # False",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

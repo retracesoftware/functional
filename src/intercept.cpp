@@ -119,10 +119,10 @@ static int init(Intercept *self, PyObject *args, PyObject *kwds) {
 }
 
 static PyMemberDef members[] = {
-    {"on_call", T_OBJECT, OFFSET_OF_MEMBER(Intercept, on_call), 0, "TODO"},
-    {"on_result", T_OBJECT, OFFSET_OF_MEMBER(Intercept, on_result), 0, "TODO"},
-    {"on_error", T_OBJECT, OFFSET_OF_MEMBER(Intercept, on_error), 0, "TODO"},
-    {"function", T_OBJECT, OFFSET_OF_MEMBER(Intercept, function), 0, "TODO"},
+    {"on_call", T_OBJECT, OFFSET_OF_MEMBER(Intercept, on_call), 0, "Callback invoked before the function with the same args."},
+    {"on_result", T_OBJECT, OFFSET_OF_MEMBER(Intercept, on_result), 0, "Callback invoked after success with the result."},
+    {"on_error", T_OBJECT, OFFSET_OF_MEMBER(Intercept, on_error), 0, "Callback invoked on exception with (type, value, traceback)."},
+    {"function", T_OBJECT, OFFSET_OF_MEMBER(Intercept, function), 0, "The wrapped function being intercepted."},
     {NULL}  /* Sentinel */
 };
 
@@ -149,7 +149,17 @@ PyTypeObject Intercept_Type = {
     .tp_call = PyVectorcall_Call,
     .tp_str = (reprfunc)repr,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_METHOD_DESCRIPTOR,
-    .tp_doc = "TODO",
+    .tp_doc = "intercept(function, on_call=None, on_result=None, on_error=None)\n--\n\n"
+               "Intercept function calls with before/after/error hooks.\n\n"
+               "Similar to advice() but can be used as a method descriptor.\n"
+               "Hooks are for observation; the original result/exception propagates.\n\n"
+               "Args:\n"
+               "    function: The callable to intercept.\n"
+               "    on_call: Called before function with the same arguments.\n"
+               "    on_result: Called after success with the result value.\n"
+               "    on_error: Called on exception with (exc_type, exc_value, exc_tb).\n\n"
+               "Returns:\n"
+               "    A wrapped callable that invokes hooks around the function.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

@@ -28,7 +28,7 @@ static void dealloc(TypePredicate *self) {
 }
 
 static PyMemberDef members[] = {
-    {"type", T_OBJECT, offsetof(TypePredicate, cls), READONLY, "TODO"},
+    {"type", T_OBJECT, offsetof(TypePredicate, cls), READONLY, "The exact type to match against."},
     {NULL}  /* Sentinel */
 };
 
@@ -66,7 +66,18 @@ PyTypeObject TypePredicate_Type = {
     .tp_vectorcall_offset = offsetof(TypePredicate, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "TypePredicate(type)\n--\n\n"
+               "Test if an object's type is exactly the given type.\n\n"
+               "Uses direct type comparison (not isinstance), so subclasses\n"
+               "will not match.\n\n"
+               "Args:\n"
+               "    type: The exact type to check for.\n\n"
+               "Returns:\n"
+               "    A predicate that returns True iff type(obj) is exactly the given type.\n\n"
+               "Example:\n"
+               "    >>> is_exactly_dict = TypePredicate(dict)\n"
+               "    >>> is_exactly_dict({})              # True\n"
+               "    >>> is_exactly_dict(OrderedDict())   # False",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

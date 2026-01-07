@@ -193,7 +193,17 @@ PyTypeObject TransformArgs_Type = {
                 Py_TPFLAGS_HAVE_GC | 
                 Py_TPFLAGS_HAVE_VECTORCALL | 
                 Py_TPFLAGS_METHOD_DESCRIPTOR,
-    .tp_doc = "TODO",
+    .tp_doc = "mapargs(function, transform, starting=0)\n--\n\n"
+               "Transform arguments before passing them to function.\n\n"
+               "Applies 'transform' to each argument starting from index 'starting',\n"
+               "then calls function with the transformed arguments.\n"
+               "Also transforms values when setting attributes.\n\n"
+               "Args:\n"
+               "    function: The target callable.\n"
+               "    transform: Applied to each argument (and kwarg value).\n"
+               "    starting: Index from which to start transforming (default 0).\n\n"
+               "Returns:\n"
+               "    A callable that transforms args before calling function.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

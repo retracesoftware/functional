@@ -70,7 +70,7 @@ static PyObject * create(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 static PyMemberDef members[] = {
-    {"functions", T_OBJECT, offsetof(CallAll, _functions), 0, "TODO"},
+    {"functions", T_OBJECT, offsetof(CallAll, _functions), 0, "The list or tuple of functions to call."},
     {NULL}  /* Sentinel */
 };
 
@@ -83,7 +83,17 @@ PyTypeObject CallAll_Type = {
     .tp_vectorcall_offset = offsetof(CallAll, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "callall(functions)\n--\n\n"
+               "Call all functions with the same arguments, return the last result.\n\n"
+               "Executes each function in order. Results of all but the last\n"
+               "are discarded. Useful for triggering multiple side effects.\n\n"
+               "Args:\n"
+               "    functions: A list or tuple of callables.\n\n"
+               "Returns:\n"
+               "    The result of the last function.\n\n"
+               "Example:\n"
+               "    >>> notify = callall([log, emit_event, update_stats])\n"
+               "    >>> notify(data)  # calls all three, returns update_stats result",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

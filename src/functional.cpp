@@ -82,16 +82,72 @@ static PyObject * py_notinstance_test(PyObject *self, PyObject *obj) {
 
 // Module-level methods
 static PyMethodDef module_methods[] = {
-    {"isinstanceof", (PyCFunction)py_instanceof, METH_VARARGS | METH_KEYWORDS, "TODO"},
-    {"instance_test", (PyCFunction)py_instance_test, METH_O, "TODO"},
-    {"notinstance_test", (PyCFunction)py_notinstance_test, METH_O, "TODO"},
-    {"typeof", (PyCFunction)py_typeof, METH_O, "TODO"},
-    {"identity", (PyCFunction)identity, METH_O, "TODO"},
-    {"apply", (PyCFunction)apply_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
-    {"first_arg", (PyCFunction)first_arg_impl, METH_FASTCALL | METH_KEYWORDS, "TODO"},
+    {"isinstanceof", (PyCFunction)py_instanceof, METH_VARARGS | METH_KEYWORDS, 
+     "isinstanceof(cls, andnot=None)\n--\n\n"
+     "Create a predicate that tests isinstance(obj, cls).\n\n"
+     "If 'andnot' is provided, also checks that obj is NOT an instance of andnot.\n\n"
+     "Args:\n"
+     "    cls: The type to test for.\n"
+     "    andnot: Optional type to exclude.\n\n"
+     "Returns:\n"
+     "    A callable predicate for isinstance checks."},
+    {"instance_test", (PyCFunction)py_instance_test, METH_O, 
+     "instance_test(cls)\n--\n\n"
+     "Create a predicate: returns obj if isinstance(obj, cls), else None.\n\n"
+     "Useful in 'first' chains to filter by type.\n\n"
+     "Args:\n"
+     "    cls: The type to test for.\n\n"
+     "Returns:\n"
+     "    A callable that returns obj or None."},
+    {"notinstance_test", (PyCFunction)py_notinstance_test, METH_O, 
+     "notinstance_test(cls)\n--\n\n"
+     "Create a predicate: returns obj if NOT isinstance(obj, cls), else None.\n\n"
+     "Inverse of instance_test.\n\n"
+     "Args:\n"
+     "    cls: The type to exclude.\n\n"
+     "Returns:\n"
+     "    A callable that returns obj or None."},
+    {"typeof", (PyCFunction)py_typeof, METH_O, 
+     "typeof(obj)\n--\n\n"
+     "Return the exact type of obj (equivalent to type(obj)).\n\n"
+     "Args:\n"
+     "    obj: Any Python object.\n\n"
+     "Returns:\n"
+     "    The type object of obj."},
+    {"identity", (PyCFunction)identity, METH_O, 
+     "identity(obj)\n--\n\n"
+     "Return obj unchanged (identity function).\n\n"
+     "Useful as a default/no-op in functional pipelines.\n\n"
+     "Args:\n"
+     "    obj: Any Python object.\n\n"
+     "Returns:\n"
+     "    obj, unchanged."},
+    {"apply", (PyCFunction)apply_impl, METH_FASTCALL | METH_KEYWORDS, 
+     "apply(func, *args, **kwargs)\n--\n\n"
+     "Call func with the given arguments (like func(*args, **kwargs)).\n\n"
+     "Useful for applying functions stored in data structures.\n\n"
+     "Args:\n"
+     "    func: The callable to invoke.\n"
+     "    *args, **kwargs: Arguments to pass to func.\n\n"
+     "Returns:\n"
+     "    The result of func(*args, **kwargs)."},
+    {"first_arg", (PyCFunction)first_arg_impl, METH_FASTCALL | METH_KEYWORDS, 
+     "first_arg(*args, **kwargs)\n--\n\n"
+     "Return the first positional argument, ignoring the rest.\n\n"
+     "Useful for extracting values in pipelines.\n\n"
+     "Args:\n"
+     "    *args: At least one positional argument required.\n\n"
+     "Returns:\n"
+     "    The first positional argument."},
     // {"partial", (PyCFunction)partial_impl, METH_FASTCALL, "TODO"},
-    {"dispatch", (PyCFunction)dispatch_impl, METH_FASTCALL, "TODO"},
-    {"firstof", (PyCFunction)firstof_impl, METH_FASTCALL, "TODO"},
+    {"dispatch", (PyCFunction)dispatch_impl, METH_FASTCALL, 
+     "dispatch(test1, then1, test2, then2, ..., [otherwise])\n--\n\n"
+     "Create a dispatch/case expression with predicate-function pairs.\n\n"
+     "See CasePredicate for details."},
+    {"firstof", (PyCFunction)firstof_impl, METH_FASTCALL, 
+     "firstof(*functions)\n--\n\n"
+     "Return the first non-None result from a sequence of functions.\n\n"
+     "See firstof type for details."},
     {NULL, NULL, 0, NULL}  // Sentinel
 };
 
@@ -99,7 +155,11 @@ static PyMethodDef module_methods[] = {
 static PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     "retracesoftware.functional",
-    "Example module with a dynamic type",
+    "High-performance functional programming utilities for Python.\n\n"
+    "This module provides optimized implementations of common functional\n"
+    "patterns including composition, partial application, memoization,\n"
+    "predicate combinators, and more. All types support Python 3.11+\n"
+    "vectorcall for minimal call overhead.",
     0,
     module_methods
 };

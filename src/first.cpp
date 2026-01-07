@@ -76,7 +76,7 @@ static void dealloc(First *self) {
 }
 
 static PyMemberDef members[] = {
-    {"elements", T_OBJECT, offsetof(First, elements), READONLY, "TODO"},
+    {"elements", T_OBJECT, offsetof(First, elements), READONLY, "The sequence of functions to try."},
     {NULL}  /* Sentinel */
 };
 
@@ -104,7 +104,17 @@ PyTypeObject First_Type = {
     .tp_vectorcall_offset = offsetof(First, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "first(*functions)\n--\n\n"
+               "Return the result of the first function that doesn't return None.\n\n"
+               "Calls functions in order until one returns a non-None value.\n"
+               "Returns None if all functions return None.\n\n"
+               "Args:\n"
+               "    *functions: Callables to try in order.\n\n"
+               "Returns:\n"
+               "    First non-None result, or None if all return None.\n\n"
+               "Example:\n"
+               "    >>> get_value = first(get_from_cache, get_from_db, get_default)\n"
+               "    >>> get_value(key)  # tries each until non-None",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

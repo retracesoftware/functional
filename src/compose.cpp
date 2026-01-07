@@ -114,7 +114,7 @@ static PyObject * repr(Compose *self) {
 }
 
 static PyMemberDef members[] = {
-    {"functions", T_OBJECT, offsetof(Compose, functions), READONLY, "TODO"},
+    {"functions", T_OBJECT, offsetof(Compose, functions), READONLY, "The sequence of functions to compose."},
     {NULL}  /* Sentinel */
 };
 
@@ -169,7 +169,19 @@ PyTypeObject Compose_Type = {
     .tp_call = PyVectorcall_Call,
     .tp_str = (reprfunc)repr,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "composeN(*functions)\n--\n\n"
+               "Compose multiple functions into a single callable.\n\n"
+               "Calls the first function with all arguments, then passes its result\n"
+               "to the second function, and so on. Optimized for tuple and list\n"
+               "containers with fallback to generic iteration.\n\n"
+               "Args:\n"
+               "    *functions: One or more callables, or an iterable of callables.\n\n"
+               "Returns:\n"
+               "    A callable that applies the composition: f_n(...(f_2(f_1(*args)))).\n\n"
+               "Example:\n"
+               "    >>> c = composeN(str.upper, str.strip)\n"
+               "    >>> c('  hello  ')\n"
+               "    'HELLO'",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

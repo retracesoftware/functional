@@ -83,7 +83,15 @@ PyTypeObject CasePredicate_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(CasePredicate, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "dispatch(test1, then1, test2, then2, ..., [otherwise])\n--\n\n"
+               "Pattern matching / case dispatch with short-circuit evaluation.\n\n"
+               "Tests predicates in order; on first truthy result, calls the\n"
+               "corresponding 'then' function. If no predicate matches and an\n"
+               "odd number of args is given, the last arg is called as fallback.\n\n"
+               "Args:\n"
+               "    Alternating (test, then) pairs, optionally ending with otherwise.\n\n"
+               "Returns:\n"
+               "    Result of the matched branch, or None if no match and no fallback.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

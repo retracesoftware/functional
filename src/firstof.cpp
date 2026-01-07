@@ -61,7 +61,15 @@ PyTypeObject FirstOf_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(FirstOf, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "firstof(*functions)\n--\n\n"
+               "Like first(), but optimized with cached vectorcall pointers.\n\n"
+               "Calls functions in order until one returns a non-None value.\n"
+               "The last function is always called (no None check), useful for\n"
+               "providing a guaranteed fallback.\n\n"
+               "Args:\n"
+               "    *functions: Callables to try in order.\n\n"
+               "Returns:\n"
+               "    First non-None result, or result of last function.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,

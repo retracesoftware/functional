@@ -75,7 +75,14 @@ PyTypeObject Either_Type = {
     .tp_vectorcall_offset = OFFSET_OF_MEMBER(Either, vectorcall),
     .tp_call = PyVectorcall_Call,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_VECTORCALL,
-    .tp_doc = "TODO",
+    .tp_doc = "either(a, b)\n--\n\n"
+               "Try function 'a' first; if it returns None, try 'b' instead.\n\n"
+               "Optimized two-function fallback with cached vectorcall.\n\n"
+               "Args:\n"
+               "    a: Primary function to try.\n"
+               "    b: Fallback function if a returns None.\n\n"
+               "Returns:\n"
+               "    Result of a if non-None, otherwise result of b.",
     .tp_traverse = (traverseproc)traverse,
     .tp_clear = (inquiry)clear,
     // .tp_methods = methods,
