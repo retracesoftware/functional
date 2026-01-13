@@ -1,6 +1,6 @@
 """Tests for AOP-style advice: advice, intercept, side_effect."""
 import pytest
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 class TestAdvice:

@@ -2,7 +2,7 @@
 # Define a custom option for version (overridable via -Dversion=...)
 
 project(
-  'retracesoftware_functional',
+  'retracesoftware-functional',
   'cpp',
   version: run_command('python', '-m', 'setuptools_scm', check: true, capture: true).stdout().strip(),
   #version: run_command('versioningit').stdout().strip(),
@@ -13,11 +13,15 @@ py = import('python').find_installation()
 fs = import('fs')
 
 py.install_sources(
-  'src/functional.py',
-  subdir: 'retracesoftware')
+  [
+    'src/retracesoftware/functional/__init__.py',
+    'src/retracesoftware/functional/_pure.py',
+  ],
+  subdir: 'retracesoftware/functional'
+)
 
 py.extension_module(
-  'retracesoftware_functional',
+  '_retracesoftware_functional',
   ['src/functional.cpp',
    'src/callall.cpp',
    'src/sideeffect.cpp',

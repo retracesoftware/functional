@@ -1,6 +1,6 @@
 """Tests for function composition: compose, composeN, callall, juxt, use_with."""
 import pytest
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 class TestCompose:

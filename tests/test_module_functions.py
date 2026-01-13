@@ -1,6 +1,6 @@
 """Tests for module-level functions: identity, typeof, apply, first_arg."""
 import pytest
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 class TestIdentity:

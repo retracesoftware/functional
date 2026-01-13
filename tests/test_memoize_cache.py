@@ -1,4 +1,4 @@
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 def test_memoize_one_arg_caches_by_identity():

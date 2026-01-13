@@ -1,6 +1,6 @@
 """Tests for utility functions: always, constantly, first, firstof, lazy, anyargs, selfapply."""
 import pytest
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 class TestAlways:

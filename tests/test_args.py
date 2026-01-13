@@ -1,6 +1,6 @@
 """Tests for argument manipulation: spread, dropargs, param, indexed, mapargs."""
 import pytest
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 class TestSpread:

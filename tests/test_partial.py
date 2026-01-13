@@ -1,4 +1,4 @@
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 def test_partial_applies_positional_and_keyword_arguments():

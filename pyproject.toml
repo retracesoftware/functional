@@ -1,5 +1,5 @@
 [project]
-name = "retracesoftware_functional"
+name = "retracesoftware-functional"
 dynamic = ["version"]
 # version = "0.1.17"
 description = "High-performance functional utilities implemented as a Python C/C++ extension"

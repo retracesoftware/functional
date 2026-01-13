@@ -1,6 +1,6 @@
 """Tests for advanced utilities: walker, deepwrap, ThreadLocalProxy, dispatch."""
 import pytest
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 import threading
 
 

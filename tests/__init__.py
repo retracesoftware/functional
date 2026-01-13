@@ -1,2 +1,2 @@
-# Tests for retracesoftware_functional
+# Tests for retracesoftware.functional
 

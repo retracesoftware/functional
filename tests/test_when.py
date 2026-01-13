@@ -1,4 +1,4 @@
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 def test_when_not_none_short_circuits_on_none_arguments():

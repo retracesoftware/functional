@@ -1,6 +1,6 @@
 """Tests for predicate combinators: and_, or_, not_, type predicates, etc."""
 import pytest
-import retracesoftware_functional as fn
+import retracesoftware.functional as fn
 
 
 class TestAndPredicate:

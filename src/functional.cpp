@@ -167,7 +167,7 @@ static PyModuleDef moduledef = {
 PyObject *ThreadLocalError = NULL;
 
 // Module initialization
-PyMODINIT_FUNC PyInit_retracesoftware_functional(void) {
+PyMODINIT_FUNC PyInit__retracesoftware_functional(void) {
     PyObject* module;
 
     // Create the module
