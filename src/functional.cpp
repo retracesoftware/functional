@@ -247,6 +247,7 @@ PyMODINIT_FUNC PyInit__retracesoftware_functional(void) {
         &UseWith_Type,
         &DeepWrap_Type,
         &WhenNotNone_Type,
+        &Lazy_Type,
         NULL
     };
     

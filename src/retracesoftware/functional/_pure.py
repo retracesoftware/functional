@@ -57,6 +57,8 @@ def composeN(*funcs: Any) -> Callable[..., Any]:
     composeN(f1, f2, f3)(x) == f3(f2(f1(x))).
 
     If passed a single list/tuple, it is treated as the function sequence.
+
+    Alias: `sequence`
     """
 
     if len(funcs) == 1 and isinstance(funcs[0], (list, tuple)):
@@ -76,6 +78,10 @@ def composeN(*funcs: Any) -> Callable[..., Any]:
         return v
 
     return _composed
+
+
+# Alias for composeN (left-to-right composition)
+sequence = composeN
 
 
 def callall(funcs: Iterable[Callable[..., Any]]) -> Callable[..., Any]:
@@ -805,6 +811,7 @@ __all__ = [
     "partial",
     "repeatedly",
     "selfapply",
+    "sequence",
     "side_effect",
     "spread",
     "ternary_predicate",

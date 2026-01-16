@@ -63,7 +63,8 @@ py.extension_module(
     'src/vector.cpp',
     'src/usewith.cpp',
     'src/deepwrap.cpp',
-    'src/whennotnone.cpp'
+    'src/whennotnone.cpp',
+    'src/lazy.cpp'
     ],
   install: true,
   link_args: ['-g'],

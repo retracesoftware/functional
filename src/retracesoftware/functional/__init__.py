@@ -58,4 +58,60 @@ def _export_public(mod: ModuleType) -> None:
 
 _export_public(_backend_mod)
 
+# ---------------------------------------------------------------------------
+# Convenience functions (originally from src/functional.py)
+# ---------------------------------------------------------------------------
+
+def sequence(*args):
+    """Compose functions left-to-right: sequence(f, g, h)(x) == h(g(f(x)))."""
+    if len(args) == 0:
+        raise Exception("sequence requires at least one argument")
+    elif len(args) == 1:
+        return args[0]
+    elif len(args) == 2:
+        # sequence(g, f) => f(g(x))
+        return _backend_mod.compose(args[1], args[0])
+    else:
+        return _backend_mod.compose(args[-1], sequence(*args[:-1]))
+
+
+def when_not(test, then):
+    """when_not(test, then)(x) -> then(x) if not test(x) else None."""
+    return _backend_mod.if_then_else(test, None, then)
+
+
+def when(test, then):
+    """when(test, then)(x) -> then(x) if test(x) else None."""
+    return _backend_mod.if_then_else(test, then, None)
+
+
+def when_instanceof(cls, then):
+    """when_instanceof(cls, then)(x) -> then(x) if isinstance(x, cls) else None."""
+    return when(_backend_mod.isinstanceof(cls), then)
+
+
+def lazy(func, *args):
+    """lazy(func, *args) -> a thunk that calls func(*args) when invoked (ignores call-time args)."""
+    return _backend_mod.partial(func, *args, required=0)
+
+
+# Alias: singular form of dropargs
+droparg = _backend_mod.dropargs
+
+
+def wrap(transform, f):
+    """wrap(transform, f) -> applies transform to args, calls f, then applies transform to result."""
+    return _backend_mod.mapargs(transform=transform, function=sequence(f, transform))
+
+
+def wrap_function(transform, f):
+    """wrap_function(transform, f) -> applies transform to args before calling f."""
+    return _backend_mod.mapargs(transform=transform, function=f)
+
+
+def recursive_wrap(pred, transform, f):
+    """recursive_wrap(pred, transform, f) -> recursively wraps when pred matches."""
+    return wrap(when(pred, _backend_mod.partial(wrap, transform)), f)
+
+
 __all__ = sorted([k for k in globals().keys() if not k.startswith("_")])
