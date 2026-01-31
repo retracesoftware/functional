@@ -1,9 +1,11 @@
 """
-`retracesoftware.functional` can run in two modes:
+`retracesoftware.functional` can run in three modes:
 
-- Native (C++ extension): fast, preferred when available.
+- Native Release (C++ extension): fast, optimized, preferred for production.
+- Native Debug (C++ extension): includes debug symbols and assertions, for debugging.
 - Pure Python: slower, but works on platforms where the extension cannot be loaded.
 
+Set `RETRACE_DEBUG=1` to use the debug build instead of release.
 Set `RETRACESOFTWARE_FUNCTIONAL_PURE_PYTHON=1` (or `FUNCTIONAL_PURE_PYTHON=1`)
 to force the pure-Python backend even if the native extension is available.
 """
@@ -25,23 +27,30 @@ _FORCE_PURE = _is_truthy_env(os.getenv("RETRACESOFTWARE_FUNCTIONAL_PURE_PYTHON")
     os.getenv("FUNCTIONAL_PURE_PYTHON")
 )
 
+_DEBUG_MODE = _is_truthy_env(os.getenv("RETRACE_DEBUG"))
+
 _backend_mod: ModuleType
 __backend__: str
 
 if not _FORCE_PURE:
     try:
-        # NOTE: the compiled extension is built/installed as `_retracesoftware_functional`.
-        import _retracesoftware_functional as _backend_mod  # type: ignore
-
-        __backend__ = "native"
+        if _DEBUG_MODE:
+            # Debug build with symbols and assertions
+            import _retracesoftware_functional_debug as _backend_mod  # type: ignore
+            __backend__ = "native-debug"
+        else:
+            # Release build (optimized)
+            import _retracesoftware_functional_release as _backend_mod  # type: ignore
+            __backend__ = "native-release"
     except Exception:  # ImportError/OSError are the common cases; keep this broad for platform loader quirks.
         from . import _pure as _backend_mod
-
         __backend__ = "pure"
 else:
     from . import _pure as _backend_mod
-
     __backend__ = "pure"
+
+# Expose debug mode flag
+DEBUG_MODE = _DEBUG_MODE and __backend__.startswith("native")
 
 
 def __getattr__(name: str) -> Any:  # pragma: no cover

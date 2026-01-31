@@ -151,10 +151,20 @@ static PyMethodDef module_methods[] = {
     {NULL, NULL, 0, NULL}  // Sentinel
 };
 
+// Module name macros - allows building as _release or _debug
+#ifndef MODULE_NAME
+#define MODULE_NAME _retracesoftware_functional
+#endif
+
+#define _STR(x) #x
+#define STR(x) _STR(x)
+#define _CONCAT(a, b) a##b
+#define CONCAT(a, b) _CONCAT(a, b)
+
 // Module definition
 static PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "retracesoftware.functional",
+    STR(MODULE_NAME),
     "High-performance functional programming utilities for Python.\n\n"
     "This module provides optimized implementations of common functional\n"
     "patterns including composition, partial application, memoization,\n"
@@ -167,7 +177,7 @@ static PyModuleDef moduledef = {
 PyObject *ThreadLocalError = NULL;
 
 // Module initialization
-PyMODINIT_FUNC PyInit__retracesoftware_functional(void) {
+PyMODINIT_FUNC CONCAT(PyInit_, MODULE_NAME)(void) {
     PyObject* module;
 
     // Create the module
