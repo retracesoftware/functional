@@ -11,12 +11,13 @@ struct TransformArgs : public PyObject {
     vectorcallfunc vectorcall;
 };
 
-static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObject* const * args, size_t nargsf, PyObject* kwnames) {
+
+static PyObject * vectorcall_from_alloca(int from, TransformArgs * self, PyObject* const * args, size_t nargsf, PyObject* kwnames) {
     size_t nargs = PyVectorcall_NARGS(nargsf);
-    int all = nargs + (kwnames ? PyTuple_Size(kwnames) : 0);
 
     assert (nargs >= from);
-
+    int all = nargs + (kwnames ? PyTuple_Size(kwnames) : 0);
+    
     // PyObject * vla[all + 1];
     PyObject ** mem = (PyObject **)alloca(sizeof(PyObject *) * (all + 1)) + 1;
 
@@ -36,12 +37,31 @@ static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObjec
             return nullptr;
         }
     }
-
     PyObject * result = self->func(mem, nargs | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
 
     for (int i = from; i < all; i++) Py_XDECREF(mem[i]);
 
     return result;
+}
+
+static inline PyObject * vectorcall_from(int from, TransformArgs * self, PyObject* const * args, size_t nargsf, PyObject* kwnames) {
+
+    if (!kwnames) {
+        size_t nargs = PyVectorcall_NARGS(nargsf);
+
+        assert (nargs >= from);
+
+        if (nargs == 0 || nargs == from) {
+            return self->func(args, nargsf, nullptr);
+        } else if (nargs == 1) {
+            PyObject * transformed = self->transform(args[0]);
+            if (!transformed) return nullptr;
+            PyObject * result = self->func(transformed);
+            Py_DECREF(transformed);
+            return result;
+        }
+    }
+    return vectorcall_from_alloca(from, self, args, nargsf, kwnames);
 }
 
 static PyObject * vectorcall0(TransformArgs * self, PyObject* const * args, size_t nargsf, PyObject* kwnames) {
