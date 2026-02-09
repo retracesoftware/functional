@@ -1,0 +1,8 @@
+#pragma once
+
+// These values are automatically populated by Meson
+#define PROJECT_VERSION "@VERSION@"
+#define PROJECT_NAME "@NAME@"
+
+// You can also add build timestamps or git hashes if needed
+#define GIT_HASH "@VCS_TAG@"
