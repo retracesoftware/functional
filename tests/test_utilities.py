@@ -1,4 +1,4 @@
-"""Tests for utility functions: always, constantly, first, firstof, lazy, anyargs, selfapply."""
+"""Tests for utility functions: always, constantly, cond, first, firstof, lazy, anyargs, selfapply."""
 import pytest
 import retracesoftware.functional as fn
 
@@ -49,6 +49,50 @@ class TestConstantly:
         
         assert const() is None
         assert const(42) is None
+
+
+class TestCond:
+    def test_single_default_constant(self):
+        c = fn.cond(42)
+        assert c() == 42
+        assert c(1, 2, 3) == 42
+
+    def test_single_default_callable(self):
+        c = fn.cond(lambda x: x + 1)
+        assert c(10) == 11
+
+    def test_one_clause(self):
+        c = fn.cond(lambda x: x > 0, lambda x: "positive", "default")
+        assert c(5) == "positive"
+        assert c(-1) == "default"
+
+    def test_multiple_clauses(self):
+        c = fn.cond(
+            lambda x: x < 0, lambda x: "neg",
+            lambda x: x == 0, lambda x: "zero",
+            "default"
+        )
+        assert c(-1) == "neg"
+        assert c(0) == "zero"
+        assert c(1) == "default"
+
+    def test_chains_if_then_else(self):
+        c = fn.cond(
+            lambda x: x == 1, lambda x: "one",
+            lambda x: x == 2, lambda x: "two",
+            lambda x: "other"
+        )
+        assert c(1) == "one"
+        assert c(2) == "two"
+        assert c(3) == "other"
+
+    def test_requires_odd_args(self):
+        with pytest.raises(ValueError, match="odd number"):
+            fn.cond(lambda x: True, lambda x: 1)
+
+    def test_requires_at_least_one_arg(self):
+        with pytest.raises(ValueError, match="at least one"):
+            fn.cond()
 
 
 class TestFirst:

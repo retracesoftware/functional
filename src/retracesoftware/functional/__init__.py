@@ -99,6 +99,29 @@ def when_instanceof(cls, then):
     return when(_backend_mod.isinstanceof(cls), then)
 
 
+def cond(*args):
+    """
+    Build a chain of if_then_else: cond(cond1, action1, cond2, action2, ..., default).
+    Returns a callable that evaluates the first matching condition and applies its action.
+    If no condition matches, returns the result of the default (callable or constant).
+    """
+    if len(args) < 1:
+        raise ValueError("cond requires at least one argument (the default)")
+    if len(args) % 2 != 1:
+        raise ValueError("cond requires an odd number of args: cond1, action1, cond2, action2, ..., default")
+
+    default = args[-1]
+    if len(args) == 1:
+        return default if callable(default) else _backend_mod.constantly(default)
+
+    result = default if callable(default) else _backend_mod.constantly(default)
+    n = (len(args) - 1) // 2
+    for i in range(n - 1, -1, -1):
+        c, a = args[2 * i], args[2 * i + 1]
+        result = _backend_mod.if_then_else(c, a, result)
+    return result
+
+
 def lazy(func, *args):
     """lazy(func, *args) -> a thunk that calls func(*args) when invoked (ignores call-time args)."""
     return _backend_mod.partial(func, *args, required=0)

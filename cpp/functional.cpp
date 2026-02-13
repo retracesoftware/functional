@@ -258,6 +258,7 @@ PyMODINIT_FUNC CONCAT(PyInit_, MODULE_NAME)(void) {
         &DeepWrap_Type,
         &WhenNotNone_Type,
         &Lazy_Type,
+        &ArityDispatch_Type,
         NULL
     };
     
