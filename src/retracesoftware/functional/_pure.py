@@ -491,6 +491,27 @@ def param(name: str, index: int) -> Callable[..., Any]:
     return _param
 
 
+class positional_param:
+    """positional_param(index)(*args) -> args[index]. Ignores kwargs."""
+
+    __slots__ = ('index',)
+
+    def __init__(self, index: int):
+        if not isinstance(index, int) or index < 0:
+            raise ValueError("positional_param index must be a non-negative int")
+        self.index = index
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        if self.index < len(args):
+            return args[self.index]
+        raise IndexError(
+            f"positional_param({self.index}): expected at least "
+            f"{self.index + 1} positional args, got {len(args)}")
+
+    def __repr__(self) -> str:
+        return f"positional_param({self.index})"
+
+
 class _MapArgs:
     def __init__(self, func: Callable[..., Any], transform: Callable[[Any], Any], starting: int = 0):
         self._func = func
@@ -808,6 +829,7 @@ __all__ = [
     "notinstance_test",
     "or_predicate",
     "param",
+    "positional_param",
     "partial",
     "repeatedly",
     "selfapply",

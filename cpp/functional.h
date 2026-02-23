@@ -62,6 +62,7 @@ extern PyTypeObject MethodInvoker_Type;
 extern PyTypeObject Intercept_Type;
 extern PyTypeObject Indexer_Type;
 extern PyTypeObject Param_Type;
+extern PyTypeObject PositionalParam_Type;
 extern PyTypeObject TernaryPredicate_Type;
 extern PyTypeObject IfThenElse_Type;
 extern PyTypeObject AnyArgs_Type;
