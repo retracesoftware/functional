@@ -136,12 +136,10 @@ class TestModuleImports:
 
     def test_memoization_types(self):
         assert hasattr(fn, 'memoize_one_arg')
-        assert hasattr(fn, 'Cache')
 
     def test_advanced_types(self):
         assert hasattr(fn, 'walker')
         assert hasattr(fn, 'deepwrap')
-        assert hasattr(fn, 'ThreadLocalProxy')
         assert hasattr(fn, 'when_not_none')
         assert hasattr(fn, 'selfapply')
         assert hasattr(fn, 'either')

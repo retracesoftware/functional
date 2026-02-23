@@ -236,8 +236,6 @@ PyMODINIT_FUNC CONCAT(PyInit_, MODULE_NAME)(void) {
         &CasePredicate_Type,
         &Memoize_Type,
 
-        &Cache_Type,
-        &ThreadLocalProxy_Type,
         &Partial_Type,
         &MethodInvoker_Type,
         &Intercept_Type,

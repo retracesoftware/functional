@@ -1,7 +1,6 @@
-"""Tests for advanced utilities: walker, deepwrap, ThreadLocalProxy, dispatch."""
+"""Tests for advanced utilities: walker, deepwrap, dispatch."""
 import pytest
 import retracesoftware.functional as fn
-import threading
 
 
 class TestWalker:
@@ -123,103 +122,6 @@ class TestDeepWrap:
         
         assert result == 10
         assert seen_results == [10]
-
-
-class TestThreadLocalProxy:
-    def test_set_and_get_value(self):
-        proxy = fn.ThreadLocalProxy()
-        
-        fn.ThreadLocalProxy.set(proxy, "test_value")
-        result = fn.ThreadLocalProxy.get(proxy)
-        
-        assert result == "test_value"
-
-    def test_unset_proxy_returns_none(self):
-        proxy = fn.ThreadLocalProxy()
-        
-        result = fn.ThreadLocalProxy.get(proxy)
-        
-        assert result is None
-
-    def test_calling_unset_proxy_raises_error(self):
-        proxy = fn.ThreadLocalProxy()
-        
-        try:
-            proxy()  # Should raise because no target set
-            assert False, "Should have raised"
-        except RuntimeError:
-            pass
-
-    @pytest.mark.skip(reason="CustomError not recognized as BaseException subclass")
-    def test_custom_error_on_unset_access(self):
-        class CustomError(Exception):
-            pass
-        
-        error = CustomError("not set")
-        proxy = fn.ThreadLocalProxy(error=error)
-        
-        try:
-            proxy()
-            assert False, "Should have raised"
-        except CustomError:
-            pass
-
-    def test_different_threads_see_different_values(self):
-        proxy = fn.ThreadLocalProxy()
-        results = {}
-        
-        def thread_func(name, value):
-            fn.ThreadLocalProxy.set(proxy, value)
-            results[name] = fn.ThreadLocalProxy.get(proxy)
-        
-        fn.ThreadLocalProxy.set(proxy, "main")
-        
-        t1 = threading.Thread(target=thread_func, args=("t1", "thread1"))
-        t2 = threading.Thread(target=thread_func, args=("t2", "thread2"))
-        
-        t1.start()
-        t2.start()
-        t1.join()
-        t2.join()
-        
-        assert fn.ThreadLocalProxy.get(proxy) == "main"
-        assert results["t1"] == "thread1"
-        assert results["t2"] == "thread2"
-
-    def test_delegates_attribute_access_to_target(self):
-        class Target:
-            value = 42
-        
-        proxy = fn.ThreadLocalProxy()
-        fn.ThreadLocalProxy.set(proxy, Target())
-        
-        assert proxy.value == 42
-
-    def test_delegates_calls_to_target(self):
-        def target_func(x):
-            return x * 2
-        
-        proxy = fn.ThreadLocalProxy()
-        fn.ThreadLocalProxy.set(proxy, target_func)
-        
-        assert proxy(5) == 10
-
-    def test_set_returns_previous_value(self):
-        proxy = fn.ThreadLocalProxy()
-        
-        prev1 = fn.ThreadLocalProxy.set(proxy, "first")
-        assert prev1 is None
-        
-        prev2 = fn.ThreadLocalProxy.set(proxy, "second")
-        assert prev2 == "first"
-
-    def test_set_none_clears_value(self):
-        proxy = fn.ThreadLocalProxy()
-        
-        fn.ThreadLocalProxy.set(proxy, "value")
-        fn.ThreadLocalProxy.set(proxy, None)
-        
-        assert fn.ThreadLocalProxy.get(proxy) is None
 
 
 @pytest.mark.skip(reason="dispatch type cannot be instantiated - not implemented")

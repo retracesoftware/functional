@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import functools
 import sys
-import threading
 from typing import Any, Callable, Dict, Iterable, Mapping, MutableMapping, Sequence, Tuple
 
 
@@ -622,37 +621,6 @@ def method_invoker(obj: Any, method_name: str, lookup_error: BaseException | Non
     return _invoke
 
 
-class Cache:
-    """Cache(lookup) caches only non-None lookup results."""
-
-    def __init__(self, lookup: Callable[[Any], Any]):
-        if not callable(lookup):
-            raise TypeError("Cache expects a callable lookup")
-        self._lookup = lookup
-        self._cache: Dict[Any, Any] = {}
-        self._cache_by_id: Dict[int, Any] = {}
-        self._keepalive_by_id: Dict[int, Any] = {}
-
-    def __call__(self, key: Any) -> Any:
-        try:
-            if key in self._cache:
-                return self._cache[key]
-            v = self._lookup(key)
-            if v is not None:
-                self._cache[key] = v
-            return v
-        except TypeError:
-            # Unhashable keys: fall back to identity.
-            k = id(key)
-            if k in self._cache_by_id:
-                return self._cache_by_id[k]
-            v = self._lookup(key)
-            if v is not None:
-                self._cache_by_id[k] = v
-                self._keepalive_by_id[k] = key
-            return v
-
-
 def memoize_one_arg(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
     """memoize_one_arg(func)(x) caches results by object identity (id(x))."""
 
@@ -762,43 +730,7 @@ def deepwrap(wrapper: Callable[[Any], Any], func: Callable[..., Any]) -> Callabl
     return _deep
 
 
-class ThreadLocalProxy:
-    """A per-thread proxy to an underlying target value/callable."""
-
-    def __init__(self, error: BaseException | None = None):
-        self._local = threading.local()
-        self._error = error or RuntimeError("ThreadLocalProxy target not set")
-
-    def get(self) -> Any:
-        return getattr(self._local, "value", None)
-
-    def set(self, value: Any) -> Any:
-        prev = getattr(self._local, "value", None)
-        if value is None:
-            if hasattr(self._local, "value"):
-                delattr(self._local, "value")
-            return prev
-        setattr(self._local, "value", value)
-        return prev
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        target = self.get()
-        if target is None:
-            raise self._error
-        if not callable(target):
-            raise RuntimeError("ThreadLocalProxy target is not callable")
-        return target(*args, **kwargs)
-
-    def __getattr__(self, name: str) -> Any:
-        target = self.get()
-        if target is None:
-            raise AttributeError(name)
-        return getattr(target, name)
-
-
 __all__ = [
-    "Cache",
-    "ThreadLocalProxy",
     "TypePredicate",
     "advice",
     "always",

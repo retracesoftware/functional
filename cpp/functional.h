@@ -54,8 +54,6 @@ extern PyTypeObject CasePredicate_Type;
 extern PyTypeObject Memoize_Type;
 extern PyTypeObject ManyPredicate_Type;
 extern PyTypeObject Walker_Type;
-extern PyTypeObject Cache_Type;
-extern PyTypeObject ThreadLocalProxy_Type;
 extern PyTypeObject TypePredWalker_Type;
 extern PyTypeObject Partial_Type;
 extern PyTypeObject MethodInvoker_Type;

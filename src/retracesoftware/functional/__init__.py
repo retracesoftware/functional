@@ -13,6 +13,7 @@ to force the pure-Python backend even if the native extension is available.
 from __future__ import annotations
 
 import os
+import warnings
 from types import ModuleType
 from typing import Any
 
@@ -53,14 +54,29 @@ else:
 DEBUG_MODE = _DEBUG_MODE and __backend__.startswith("native")
 
 
-def __getattr__(name: str) -> Any:  # pragma: no cover
+_DEPRECATED = frozenset({
+    "TypePredicate", "positional_param",
+    "advice", "and_predicate", "anyargs", "callall", "composeN", "deepwrap",
+    "dropargs", "either", "first", "first_arg", "indexed", "instance_test",
+    "method_invoker", "not_predicate", "notinstance_test", "or_predicate",
+    "selfapply", "ternary_predicate", "use_with", "when_predicate",
+})
+
+
+def __getattr__(name: str) -> Any:
+    if name in _DEPRECATED:
+        warnings.warn(
+            f"retracesoftware.functional.{name} is deprecated and will be removed in a future release",
+            DeprecationWarning,
+            stacklevel=2,
+        )
     return getattr(_backend_mod, name)
 
 
 def _export_public(mod: ModuleType) -> None:
     g = globals()
     for k, v in mod.__dict__.items():
-        if k.startswith("_"):
+        if k.startswith("_") or k in _DEPRECATED:
             continue
         g[k] = v
 
