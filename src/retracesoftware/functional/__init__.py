@@ -56,9 +56,9 @@ DEBUG_MODE = _DEBUG_MODE and __backend__.startswith("native")
 
 _DEPRECATED = frozenset({
     "TypePredicate", "positional_param",
-    "advice", "and_predicate", "anyargs", "callall", "composeN", "deepwrap",
+    "advice", "anyargs", "callall", "composeN", "deepwrap",
     "dropargs", "either", "first", "first_arg", "indexed", "instance_test",
-    "method_invoker", "not_predicate", "notinstance_test", "or_predicate",
+    "method_invoker", "not_predicate", "notinstance_test",
     "selfapply", "ternary_predicate", "use_with", "when_predicate",
 })
 
