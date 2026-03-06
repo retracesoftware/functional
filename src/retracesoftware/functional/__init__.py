@@ -92,12 +92,23 @@ def sequence(*args):
     if len(args) == 0:
         raise Exception("sequence requires at least one argument")
     elif len(args) == 1:
-        return args[0]
+        if args[0] is None:
+            return sequence()
+        else:
+            return args[0]
     elif len(args) == 2:
-        # sequence(g, f) => f(g(x))
-        return _backend_mod.compose(args[1], args[0])
+        if args[0] is None:
+            return sequence(args[1])
+        elif args[1] is None:
+            return sequence(args[0])
+        else:
+            # sequence(g, f) => f(g(x))
+            return _backend_mod.compose(args[1], args[0])
     else:
-        return _backend_mod.compose(args[-1], sequence(*args[:-1]))
+        if args[-1] is None:
+            return sequence(*args[:-1])
+        else:
+            return _backend_mod.compose(args[-1], sequence(*args[:-1]))
 
 
 def when(test, then):
